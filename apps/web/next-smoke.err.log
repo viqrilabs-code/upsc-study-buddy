@@ -1,0 +1,8 @@
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3001
+- PID:          36740
+- Dir:          C:\Users\amiti\Desktop\viqri-labs\upsc-study-buddy\apps\web
+- Log:          .next\dev\logs\next-development.log
+
+Run taskkill /PID 36740 /F to stop it.

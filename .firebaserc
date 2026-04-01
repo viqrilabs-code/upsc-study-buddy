@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "tamgam-upsc",
+    "production": "tamgam-upsc"
+  }
+}

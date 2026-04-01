@@ -1,0 +1,20 @@
+{
+  "hosting": {
+    "site": "tamgam-upsc",
+    "public": "firebase-hosting",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "tamgam-web",
+          "region": "asia-south1"
+        }
+      }
+    ]
+  }
+}

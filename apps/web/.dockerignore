@@ -1,0 +1,13 @@
+.next
+node_modules
+data/private
+.env*
+!.env.example
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.git
+.gitignore
+README.md
+next-smoke.out.log
+next-smoke.err.log
