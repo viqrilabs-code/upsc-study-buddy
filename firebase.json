@@ -7,9 +7,21 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "redirects": [
+      {
+        "source": "/",
+        "destination": "https://tamgam.in/",
+        "type": 302
+      },
+      {
+        "source": "/:path*",
+        "destination": "https://tamgam.in/:path",
+        "type": 302
+      }
+    ],
     "rewrites": [
       {
-        "source": "**",
+        "source": "/__/firebase/**",
         "run": {
           "serviceId": "tamgam-web",
           "region": "asia-south1"

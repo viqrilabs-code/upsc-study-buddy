@@ -1,10 +1,12 @@
 "use client";
 
 import { createContext, useContext, useMemo, useState } from "react";
+import { dedupeSelectedFiles, mergeSelectedFiles } from "@/lib/file-selection";
 
 type GlobalStudyMaterialContextValue = {
   files: File[];
   setFiles: (files: File[]) => void;
+  appendFiles: (files: File[]) => void;
   clearFiles: () => void;
 };
 
@@ -20,7 +22,9 @@ export function GlobalStudyMaterialProvider({
   const value = useMemo<GlobalStudyMaterialContextValue>(
     () => ({
       files,
-      setFiles: (nextFiles) => setFilesState(nextFiles),
+      setFiles: (nextFiles) => setFilesState(dedupeSelectedFiles(nextFiles)),
+      appendFiles: (nextFiles) =>
+        setFilesState((currentFiles) => mergeSelectedFiles(currentFiles, nextFiles)),
       clearFiles: () => setFilesState([]),
     }),
     [files],
@@ -42,4 +46,3 @@ export function useGlobalStudyMaterial() {
 
   return context;
 }
-

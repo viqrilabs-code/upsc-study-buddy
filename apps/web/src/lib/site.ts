@@ -37,7 +37,7 @@ export const subjectOptions = [
 export const mainNav: NavItem[] = [
   { href: "/app", label: "Workspace" },
   { href: "/pricing", label: "Pricing" },
-  { href: "/current-affairs", label: "Current Affairs", badge: "Free" },
+  { href: "/current-affairs", label: "Current Affairs", badge: "Trial" },
   { href: "/notes", label: "1-Pager Notes" },
 ];
 
@@ -59,9 +59,9 @@ export const featureCards: FeatureCard[] = [
   },
   {
     eyebrow: "Daily relevance",
-    title: "Current affairs becomes a free daily habit, not another messy tab pile.",
+    title: "Current affairs becomes a guided daily class, not another messy tab pile.",
     description:
-      "Daily briefs, notes, MCQs, and revision hooks stay open to every user, even before payment.",
+      "Users get 3 current-affairs trial turns, then continue with the same article-wise classroom flow on a paid plan.",
     icon: Newspaper,
     accent: "from-[#ffd8b5]/40 to-[#f07b17]/8",
   },
@@ -107,8 +107,8 @@ export const productTracks = [
 ];
 
 export const homeStats = [
-  { label: "Free trial", value: "3 turns" },
-  { label: "Current affairs", value: "Always free" },
+  { label: "Study trial", value: "3 turns" },
+  { label: "Current affairs", value: "3-turn trial" },
   { label: "Plans", value: "11 / 299 / 1999" },
   { label: "Storage", value: "Only user data" },
 ];
@@ -159,12 +159,21 @@ export const pricingPlans = paidPlans.map((plan) => ({
   description: plan.description,
   featured: plan.id === "month",
   planId: plan.id,
-  features: [
-    "Google sign-in and saved workspace",
-    "AI chat, Mains, Prelims, and notes inside one account",
-    "Report memory with strength and weakness tracking",
-    "Current affairs remains free for everyone",
-  ],
+  features:
+    plan.id === "day"
+      ? [
+          "1 uploaded study document across the workspace",
+          "1 1-pager revision note generation",
+          "1 Prelims test and result",
+          "1 Mains question with evaluation",
+          "Current affairs access after the 3 free trial turns",
+        ]
+      : [
+          "Google sign-in and saved workspace",
+          "Study, Current Affairs, Mains, Prelims, and notes inside one account",
+          "Report memory with strength and weakness tracking",
+          "Current affairs, Mains, Prelims, and notes stay unlocked",
+        ],
 }));
 
 export const faqItems = [
@@ -176,7 +185,7 @@ export const faqItems = [
   {
     question: "When does payment start?",
     answer:
-      "Users get 3 free agent turns. After that, paid access is required for continued AI usage. Current affairs remains free.",
+      "Study gets 3 free turns. Current affairs gets 3 free turns. Mains includes 1 free question and 1 free evaluation. 1-pager notes include 1 free generation. Prelims is paid from the first test.",
   },
   {
     question: "Can TamGam customize questions from past mistakes?",
@@ -224,7 +233,7 @@ export const pageDescriptions = {
   about:
     "Why TamGam is being built as a focused UPSC study companion that remembers user performance and keeps practice honest.",
   currentAffairs:
-    "Free daily current affairs notes, issue mapping, and revision-ready outputs inside TamGam.",
+    "Daily current affairs classes, issue mapping, and revision-ready outputs inside TamGam.",
   dashboard:
     "A real report-driven dashboard for TamGam users, including saved tests, strengths, weaknesses, and plan state.",
   help:
@@ -232,7 +241,7 @@ export const pageDescriptions = {
   notes:
     "Upload-led 1-pager revision notes for GS and Optional with keywords, mind maps, and probable mains Q&A.",
   pricing:
-    "TamGam pricing for daily, monthly, and yearly plans, with 3 free turns and free current affairs access.",
+    "TamGam pricing for daily, monthly, and yearly plans, with feature-specific trials before payment.",
   privacy:
     "How TamGam handles user data, reports, uploads, ratings, and subscription information.",
   pyqs:
@@ -244,7 +253,7 @@ export const pageDescriptions = {
 export const landingHighlights = [
   "Study with an AI buddy that actually remembers your weak areas.",
   "Practice Mains and Prelims in the same place where the reports get saved.",
-  "Current affairs stays free. The serious loops unlock after the free turns.",
+  "Current affairs, notes, and Mains each start with a small trial, then continue on paid plans.",
 ];
 
 export const landingPunch = [
@@ -257,6 +266,6 @@ export const marketingLine = {
   title: "The study buddy that tracks weakness, sharpens practice, and keeps the day disciplined.",
   description:
     "Chat less blindly. Practice with memory. Turn reports into better next questions.",
-  proof: "3 free turns. Current affairs free. Google sign-in. Razorpay billing.",
+  proof: "3 free Study turns. 3 Current Affairs trial turns. 1 free note. 1 free Mains evaluation.",
   icon: Flame,
 };

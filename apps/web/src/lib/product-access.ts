@@ -1,9 +1,13 @@
 import { getServerSession } from "next-auth";
 import {
   consumeAgentTurn,
+  getCurrentAffairsRemainingTrialTurns,
+  getDayPassLimitSnapshot,
+  getFeatureTrialSnapshot,
   getOrCreateUserProfile,
   getPersonalizationSnapshot,
   getRemainingFreeTurns,
+  hasActiveDayPass,
   hasActiveSubscription,
   type UserProfile,
 } from "@/lib/app-db";
@@ -54,14 +58,40 @@ export async function consumeTurnIfNeeded(profile: UserProfile) {
   };
 }
 
+export async function consumeCurrentAffairsTurnIfNeeded(profile: UserProfile) {
+  if (hasActiveSubscription(profile)) {
+    return {
+      blocked: false,
+      profile,
+    };
+  }
+
+  const remaining = getCurrentAffairsRemainingTrialTurns(profile);
+
+  if (remaining <= 0) {
+    return {
+      blocked: true,
+      profile,
+    };
+  }
+
+  return {
+    blocked: false,
+    profile,
+  };
+}
+
 export function getUsageMeta(profile: UserProfile) {
   const hasActivePlan = hasActiveSubscription(profile);
+  const isDayPass = hasActiveDayPass(profile);
 
   return {
     plan: profile.plan,
     hasActivePlan,
     freeTurnsUsed: profile.freeTurnsUsed,
     remainingFreeTurns: hasActivePlan ? 0 : getRemainingFreeTurns(profile),
+    featureTrials: hasActivePlan ? undefined : getFeatureTrialSnapshot(profile),
+    ...(isDayPass ? { dayPassLimits: getDayPassLimitSnapshot(profile) } : {}),
   };
 }
 

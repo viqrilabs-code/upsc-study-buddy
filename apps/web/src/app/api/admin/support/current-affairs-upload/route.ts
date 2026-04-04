@@ -60,8 +60,8 @@ export async function POST(request: Request) {
 
   try {
     const [newspapers, magazines] = await Promise.all([
-      extractUploadFiles(newspaperFiles),
-      extractUploadFiles(magazineFiles),
+      extractUploadFiles(newspaperFiles, { maxCharacters: null }),
+      extractUploadFiles(magazineFiles, { maxCharacters: null }),
     ]);
 
     const pack = await saveAdminCurrentAffairsPack({
@@ -87,4 +87,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

@@ -1,0 +1,364 @@
+[debug] [2026-04-01T14:38:57.860Z] ----------------------------------------------------------------------
+[debug] [2026-04-01T14:38:57.869Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\amiti\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js hosting:sites:list --project tamgam-upsc --json
+[debug] [2026-04-01T14:38:57.869Z] CLI Version:   14.22.0
+[debug] [2026-04-01T14:38:57.870Z] Platform:      win32
+[debug] [2026-04-01T14:38:57.870Z] Node Version:  v20.19.5
+[debug] [2026-04-01T14:38:57.870Z] Time:          Wed Apr 01 2026 20:08:57 GMT+0530 (India Standard Time)
+[debug] [2026-04-01T14:38:57.870Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-04-01T14:38:58.103Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-04-01T14:38:58.104Z] > authorizing via signed-in user (guptaamit.work@gmail.com)
+[debug] [2026-04-01T14:38:58.104Z] [iam] checking project tamgam-upsc for permissions ["firebase.projects.get","firebasehosting.sites.get"]
+[debug] [2026-04-01T14:38:58.106Z] Checked if tokens are valid: false, expires at: 1775045450859
+[debug] [2026-04-01T14:38:58.106Z] Checked if tokens are valid: false, expires at: 1775045450859
+[debug] [2026-04-01T14:38:58.107Z] > refreshing access token with scopes: []
+[debug] [2026-04-01T14:38:58.109Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-04-01T14:38:58.109Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-01T14:38:58.313Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-04-01T14:38:58.313Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-01T14:38:58.323Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions [none]
+[debug] [2026-04-01T14:38:58.323Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions x-goog-quota-user=projects/tamgam-upsc
+[debug] [2026-04-01T14:38:58.323Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.get"]}
+[debug] [2026-04-01T14:38:59.687Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions 200
+[debug] [2026-04-01T14:38:59.687Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.get"]}
+[debug] [2026-04-01T14:38:59.687Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T14:38:59.687Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T14:38:59.689Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/tamgam-upsc/sites pageToken=&pageSize=10
+[debug] [2026-04-01T14:39:00.938Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/tamgam-upsc/sites 200
+[debug] [2026-04-01T15:21:52.212Z] ----------------------------------------------------------------------
+[debug] [2026-04-01T15:21:52.220Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\amiti\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting --project tamgam-upsc
+[debug] [2026-04-01T15:21:52.221Z] CLI Version:   14.22.0
+[debug] [2026-04-01T15:21:52.222Z] Platform:      win32
+[debug] [2026-04-01T15:21:52.222Z] Node Version:  v20.19.5
+[debug] [2026-04-01T15:21:52.222Z] Time:          Wed Apr 01 2026 20:51:52 GMT+0530 (India Standard Time)
+[debug] [2026-04-01T15:21:52.223Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-04-01T15:21:52.648Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-04-01T15:21:52.649Z] > authorizing via signed-in user (guptaamit.work@gmail.com)
+[debug] [2026-04-01T15:21:52.650Z] [iam] checking project tamgam-upsc for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-04-01T15:21:52.652Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:52.652Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:52.654Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions [none]
+[debug] [2026-04-01T15:21:52.654Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions x-goog-quota-user=projects/tamgam-upsc
+[debug] [2026-04-01T15:21:52.654Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-04-01T15:21:53.028Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions 200
+[debug] [2026-04-01T15:21:53.028Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-04-01T15:21:53.029Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:53.029Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:53.030Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/tamgam-upsc [none]
+[debug] [2026-04-01T15:21:53.445Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/tamgam-upsc 200
+[debug] [2026-04-01T15:21:53.445Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/tamgam-upsc {"projectId":"tamgam-upsc","projectNumber":"1052274651199","displayName":"TamGam-UPSC","name":"projects/tamgam-upsc","resources":{"hostingSite":"tamgam-upsc"},"state":"ACTIVE","etag":"1_1c099aa4-c53a-4644-838d-d7752ba40e37"}
+[info] 
+[info] === Deploying to 'tamgam-upsc'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2026-04-01T15:21:53.452Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:53.452Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:53.452Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions [none]
+[debug] [2026-04-01T15:21:53.453Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2026-04-01T15:21:55.287Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions 200
+[debug] [2026-04-01T15:21:55.287Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions {"name":"projects/1052274651199/sites/tamgam-upsc/versions/c0bb38aa0f89f922","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[tamgam-upsc]: beginning deploy... 
+[info] i  hosting[tamgam-upsc]: found 1 files in firebase-hosting 
+[debug] [2026-04-01T15:21:55.311Z] [hosting] uploading with 200 concurrency
+[debug] [2026-04-01T15:21:55.315Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:55.315Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:55.319Z] [hosting] hash cache [ZmlyZWJhc2UtaG9zdGluZw] stored for 1 files
+[debug] [2026-04-01T15:21:55.320Z] [hosting][hash queue][FINAL] {"max":1,"min":1,"avg":1,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":6}
+[debug] [2026-04-01T15:21:55.321Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/1052274651199/sites/tamgam-upsc/versions/c0bb38aa0f89f922:populateFiles [none]
+[debug] [2026-04-01T15:21:55.321Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/1052274651199/sites/tamgam-upsc/versions/c0bb38aa0f89f922:populateFiles {"files":{"/404.html":"3cc577aa38386ce8a14da13e719211fba8288934b8b395e72df3431268285ae9"}}
+[debug] [2026-04-01T15:21:55.932Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/1052274651199/sites/tamgam-upsc/versions/c0bb38aa0f89f922:populateFiles 200
+[debug] [2026-04-01T15:21:55.933Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/1052274651199/sites/tamgam-upsc/versions/c0bb38aa0f89f922:populateFiles {"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/tamgam-upsc/versions/c0bb38aa0f89f922/files"}
+[debug] [2026-04-01T15:21:55.933Z] [hosting][populate queue][FINAL] {"max":618,"min":618,"avg":618,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":618}
+[debug] [2026-04-01T15:21:55.933Z] [hosting] uploads queued: 0
+[debug] [2026-04-01T15:21:55.934Z] [hosting][upload queue][FINAL] {"max":0,"min":9999999999,"avg":0,"active":0,"complete":0,"success":0,"errored":0,"retried":0,"total":0,"elapsed":1775056915934}
+[info] i  hosting: upload complete 
+[info] +  hosting[tamgam-upsc]: file upload complete 
+[debug] [2026-04-01T15:21:55.935Z] [hosting] deploy completed after 644ms
+[debug] [2026-04-01T15:21:55.935Z] [
+  {
+    "config": {
+      "site": "tamgam-upsc",
+      "public": "firebase-hosting",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "redirects": [
+        {
+          "source": "/",
+          "destination": "https://tamgam-web-1052274651199.asia-south1.run.app/",
+          "type": 302
+        },
+        {
+          "source": "/:path*",
+          "destination": "https://tamgam-web-1052274651199.asia-south1.run.app/:path",
+          "type": 302
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "/__/firebase/**",
+          "run": {
+            "serviceId": "tamgam-web",
+            "region": "asia-south1"
+          }
+        }
+      ]
+    },
+    "version": "projects/1052274651199/sites/tamgam-upsc/versions/c0bb38aa0f89f922"
+  }
+]
+[info] i  hosting[tamgam-upsc]: finalizing version... 
+[debug] [2026-04-01T15:21:55.937Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:55.937Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:55.937Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions [none]
+[debug] [2026-04-01T15:21:56.156Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions 403
+[debug] [2026-04-01T15:21:56.156Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions {"error":{"code":403,"message":"Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"containerInfo":"tamgam-upsc","serviceTitle":"Cloud Functions API","activationUrl":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc","service":"cloudfunctions.googleapis.com","consumer":"projects/tamgam-upsc"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc"}]}]}}
+[debug] [2026-04-01T15:21:56.157Z] [functions] failed to list functions for tamgam-upsc
+[debug] [2026-04-01T15:21:56.158Z] [functions] Request to https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions had HTTP Error: 403, Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+[debug] [2026-04-01T15:21:56.158Z] Deploying hosting site tamgam-upsc, did not have permissions to check for backends:  Failed to list functions for tamgam-upsc {"name":"FirebaseError","children":[],"exit":1,"message":"Failed to list functions for tamgam-upsc","original":{"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"containerInfo":"tamgam-upsc","serviceTitle":"Cloud Functions API","activationUrl":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc","service":"cloudfunctions.googleapis.com","consumer":"projects/tamgam-upsc"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions had HTTP Error: 403, Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403},"status":403}
+[debug] [2026-04-01T15:21:56.160Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:56.161Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:56.162Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions/c0bb38aa0f89f922 updateMask=status%2Cconfig
+[debug] [2026-04-01T15:21:56.162Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions/c0bb38aa0f89f922 {"status":"FINALIZED","config":{"rewrites":[{"glob":"/__/firebase/**","run":{"serviceId":"tamgam-web","region":"asia-south1"}}],"redirects":[{"glob":"/","location":"https://tamgam-web-1052274651199.asia-south1.run.app/","statusCode":302},{"glob":"/:path*","location":"https://tamgam-web-1052274651199.asia-south1.run.app/:path","statusCode":302}]}}
+[debug] [2026-04-01T15:21:57.381Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions/c0bb38aa0f89f922 200
+[debug] [2026-04-01T15:21:57.382Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions/c0bb38aa0f89f922 {"name":"projects/1052274651199/sites/tamgam-upsc/versions/c0bb38aa0f89f922","status":"FINALIZED","config":{"redirects":[{"statusCode":302,"location":"https://tamgam-web-1052274651199.asia-south1.run.app/","glob":"/"},{"statusCode":302,"location":"https://tamgam-web-1052274651199.asia-south1.run.app/:path","glob":"/:path*"}],"rewrites":[{"glob":"/__/firebase/**","run":{"serviceId":"tamgam-web","region":"asia-south1"}}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-04-01T15:21:54.509498Z","createUser":{"email":"guptaamit.work@gmail.com"},"finalizeTime":"2026-04-01T15:21:57.048910Z","finalizeUser":{"email":"guptaamit.work@gmail.com"}}
+[debug] [2026-04-01T15:21:57.382Z] [hosting] finalized version for tamgam-upsc:[object Object]
+[info] +  hosting[tamgam-upsc]: version finalized 
+[info] i  hosting[tamgam-upsc]: releasing new version... 
+[debug] [2026-04-01T15:21:57.382Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:57.383Z] Checked if tokens are valid: true, expires at: 1775057937313
+[debug] [2026-04-01T15:21:57.383Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/channels/live/releases versionName=projects%2F1052274651199%2Fsites%2Ftamgam-upsc%2Fversions%2Fc0bb38aa0f89f922
+[debug] [2026-04-01T15:21:57.383Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/channels/live/releases {}
+[debug] [2026-04-01T15:21:58.674Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/channels/live/releases 200
+[debug] [2026-04-01T15:50:49.917Z] ----------------------------------------------------------------------
+[debug] [2026-04-01T15:50:49.925Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\amiti\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting --project tamgam-upsc
+[debug] [2026-04-01T15:50:49.926Z] CLI Version:   14.22.0
+[debug] [2026-04-01T15:50:49.926Z] Platform:      win32
+[debug] [2026-04-01T15:50:49.927Z] Node Version:  v20.19.5
+[debug] [2026-04-01T15:50:49.927Z] Time:          Wed Apr 01 2026 21:20:49 GMT+0530 (India Standard Time)
+[debug] [2026-04-01T15:50:49.927Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-04-01T15:50:50.548Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-04-01T15:50:50.551Z] > authorizing via signed-in user (guptaamit.work@gmail.com)
+[debug] [2026-04-01T15:50:50.551Z] [iam] checking project tamgam-upsc for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-04-01T15:50:50.554Z] Checked if tokens are valid: false, expires at: 1775057937313
+[debug] [2026-04-01T15:50:50.555Z] Checked if tokens are valid: false, expires at: 1775057937313
+[debug] [2026-04-01T15:50:50.556Z] > refreshing access token with scopes: []
+[debug] [2026-04-01T15:50:50.561Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-04-01T15:50:50.563Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-01T15:50:50.820Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-04-01T15:50:50.821Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-01T15:50:50.836Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions [none]
+[debug] [2026-04-01T15:50:50.836Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions x-goog-quota-user=projects/tamgam-upsc
+[debug] [2026-04-01T15:50:50.837Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-04-01T15:50:52.209Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions 200
+[debug] [2026-04-01T15:50:52.209Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-04-01T15:50:52.211Z] Checked if tokens are valid: true, expires at: 1775062249821
+[debug] [2026-04-01T15:50:52.211Z] Checked if tokens are valid: true, expires at: 1775062249821
+[debug] [2026-04-01T15:50:52.212Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/tamgam-upsc [none]
+[debug] [2026-04-01T15:50:52.683Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/tamgam-upsc 200
+[debug] [2026-04-01T15:50:52.683Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/tamgam-upsc {"projectId":"tamgam-upsc","projectNumber":"1052274651199","displayName":"TamGam-UPSC","name":"projects/tamgam-upsc","resources":{"hostingSite":"tamgam-upsc"},"state":"ACTIVE","etag":"1_1c099aa4-c53a-4644-838d-d7752ba40e37"}
+[info] 
+[info] === Deploying to 'tamgam-upsc'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2026-04-01T15:50:52.690Z] Checked if tokens are valid: true, expires at: 1775062249821
+[debug] [2026-04-01T15:50:52.690Z] Checked if tokens are valid: true, expires at: 1775062249821
+[debug] [2026-04-01T15:50:52.691Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions [none]
+[debug] [2026-04-01T15:50:52.691Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2026-04-01T15:50:54.652Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions 200
+[debug] [2026-04-01T15:50:54.653Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions {"name":"projects/1052274651199/sites/tamgam-upsc/versions/c692926993baa867","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[tamgam-upsc]: beginning deploy... 
+[info] i  hosting[tamgam-upsc]: found 1 files in firebase-hosting 
+[debug] [2026-04-01T15:50:54.674Z] [hosting] uploading with 200 concurrency
+[debug] [2026-04-01T15:50:54.678Z] Checked if tokens are valid: true, expires at: 1775062249821
+[debug] [2026-04-01T15:50:54.678Z] Checked if tokens are valid: true, expires at: 1775062249821
+[debug] [2026-04-01T15:50:54.680Z] [hosting] hash cache [ZmlyZWJhc2UtaG9zdGluZw] stored for 1 files
+[debug] [2026-04-01T15:50:54.681Z] [hosting][hash queue][FINAL] {"max":1,"min":1,"avg":1,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":5}
+[debug] [2026-04-01T15:50:54.681Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/1052274651199/sites/tamgam-upsc/versions/c692926993baa867:populateFiles [none]
+[debug] [2026-04-01T15:50:54.681Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/1052274651199/sites/tamgam-upsc/versions/c692926993baa867:populateFiles {"files":{"/404.html":"3cc577aa38386ce8a14da13e719211fba8288934b8b395e72df3431268285ae9"}}
+[debug] [2026-04-01T15:50:55.376Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/1052274651199/sites/tamgam-upsc/versions/c692926993baa867:populateFiles 200
+[debug] [2026-04-01T15:50:55.376Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/1052274651199/sites/tamgam-upsc/versions/c692926993baa867:populateFiles {"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/tamgam-upsc/versions/c692926993baa867/files"}
+[debug] [2026-04-01T15:50:55.376Z] [hosting][populate queue][FINAL] {"max":699,"min":699,"avg":699,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":699}
+[debug] [2026-04-01T15:50:55.377Z] [hosting] uploads queued: 0
+[debug] [2026-04-01T15:50:55.377Z] [hosting][upload queue][FINAL] {"max":0,"min":9999999999,"avg":0,"active":0,"complete":0,"success":0,"errored":0,"retried":0,"total":0,"elapsed":1775058655377}
+[info] i  hosting: upload complete 
+[info] +  hosting[tamgam-upsc]: file upload complete 
+[debug] [2026-04-01T15:50:55.377Z] [hosting] deploy completed after 721ms
+[debug] [2026-04-01T15:50:55.378Z] [
+  {
+    "config": {
+      "site": "tamgam-upsc",
+      "public": "firebase-hosting",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "redirects": [
+        {
+          "source": "/",
+          "destination": "https://tamgam.in/",
+          "type": 302
+        },
+        {
+          "source": "/:path*",
+          "destination": "https://tamgam.in/:path",
+          "type": 302
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "/__/firebase/**",
+          "run": {
+            "serviceId": "tamgam-web",
+            "region": "asia-south1"
+          }
+        }
+      ]
+    },
+    "version": "projects/1052274651199/sites/tamgam-upsc/versions/c692926993baa867"
+  }
+]
+[info] i  hosting[tamgam-upsc]: finalizing version... 
+[debug] [2026-04-01T15:50:55.379Z] Checked if tokens are valid: true, expires at: 1775062249821
+[debug] [2026-04-01T15:50:55.379Z] Checked if tokens are valid: true, expires at: 1775062249821
+[debug] [2026-04-01T15:50:55.380Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions [none]
+[debug] [2026-04-01T15:50:55.617Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions 403
+[debug] [2026-04-01T15:50:55.618Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions {"error":{"code":403,"message":"Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"cloudfunctions.googleapis.com","activationUrl":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc","containerInfo":"tamgam-upsc","serviceTitle":"Cloud Functions API","consumer":"projects/tamgam-upsc"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc"}]}]}}
+[debug] [2026-04-01T15:50:55.619Z] [functions] failed to list functions for tamgam-upsc
+[debug] [2026-04-01T15:50:55.619Z] [functions] Request to https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions had HTTP Error: 403, Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+[debug] [2026-04-01T15:50:55.620Z] Deploying hosting site tamgam-upsc, did not have permissions to check for backends:  Failed to list functions for tamgam-upsc {"name":"FirebaseError","children":[],"exit":1,"message":"Failed to list functions for tamgam-upsc","original":{"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"service":"cloudfunctions.googleapis.com","activationUrl":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc","containerInfo":"tamgam-upsc","serviceTitle":"Cloud Functions API","consumer":"projects/tamgam-upsc"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions had HTTP Error: 403, Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403},"status":403}
+[debug] [2026-04-01T15:50:55.622Z] Checked if tokens are valid: true, expires at: 1775062249821
+[debug] [2026-04-01T15:50:55.622Z] Checked if tokens are valid: true, expires at: 1775062249821
+[debug] [2026-04-01T15:50:55.624Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions/c692926993baa867 updateMask=status%2Cconfig
+[debug] [2026-04-01T15:50:55.624Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions/c692926993baa867 {"status":"FINALIZED","config":{"rewrites":[{"glob":"/__/firebase/**","run":{"serviceId":"tamgam-web","region":"asia-south1"}}],"redirects":[{"glob":"/","location":"https://tamgam.in/","statusCode":302},{"glob":"/:path*","location":"https://tamgam.in/:path","statusCode":302}]}}
+[debug] [2026-04-01T15:50:56.990Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions/c692926993baa867 200
+[debug] [2026-04-01T15:50:56.990Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions/c692926993baa867 {"name":"projects/1052274651199/sites/tamgam-upsc/versions/c692926993baa867","status":"FINALIZED","config":{"redirects":[{"statusCode":302,"location":"https://tamgam.in/","glob":"/"},{"statusCode":302,"location":"https://tamgam.in/:path","glob":"/:path*"}],"rewrites":[{"glob":"/__/firebase/**","run":{"serviceId":"tamgam-web","region":"asia-south1"}}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-04-01T15:50:53.764889Z","createUser":{"email":"guptaamit.work@gmail.com"},"finalizeTime":"2026-04-01T15:50:56.641995Z","finalizeUser":{"email":"guptaamit.work@gmail.com"}}
+[debug] [2026-04-01T15:50:56.991Z] [hosting] finalized version for tamgam-upsc:[object Object]
+[info] +  hosting[tamgam-upsc]: version finalized 
+[info] i  hosting[tamgam-upsc]: releasing new version... 
+[debug] [2026-04-01T15:50:56.991Z] Checked if tokens are valid: true, expires at: 1775062249821
+[debug] [2026-04-01T15:50:56.991Z] Checked if tokens are valid: true, expires at: 1775062249821
+[debug] [2026-04-01T15:50:56.992Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/channels/live/releases versionName=projects%2F1052274651199%2Fsites%2Ftamgam-upsc%2Fversions%2Fc692926993baa867
+[debug] [2026-04-01T15:50:56.992Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/channels/live/releases {}
+[debug] [2026-04-01T15:50:57.981Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/channels/live/releases 200
+[debug] [2026-04-03T07:08:06.352Z] ----------------------------------------------------------------------
+[debug] [2026-04-03T07:08:06.355Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\amiti\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only hosting --project tamgam-upsc
+[debug] [2026-04-03T07:08:06.356Z] CLI Version:   14.22.0
+[debug] [2026-04-03T07:08:06.356Z] Platform:      win32
+[debug] [2026-04-03T07:08:06.356Z] Node Version:  v20.19.5
+[debug] [2026-04-03T07:08:06.356Z] Time:          Fri Apr 03 2026 12:38:06 GMT+0530 (India Standard Time)
+[debug] [2026-04-03T07:08:06.356Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-04-03T07:08:06.358Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2026-04-03T07:08:06.602Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-04-03T07:08:06.603Z] > authorizing via signed-in user (guptaamit.work@gmail.com)
+[debug] [2026-04-03T07:08:06.603Z] [iam] checking project tamgam-upsc for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-04-03T07:08:06.605Z] Checked if tokens are valid: false, expires at: 1775062249821
+[debug] [2026-04-03T07:08:06.605Z] Checked if tokens are valid: false, expires at: 1775062249821
+[debug] [2026-04-03T07:08:06.606Z] > refreshing access token with scopes: []
+[debug] [2026-04-03T07:08:06.607Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-04-03T07:08:06.607Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-03T07:08:06.733Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-04-03T07:08:06.733Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-04-03T07:08:06.743Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions [none]
+[debug] [2026-04-03T07:08:06.743Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions x-goog-quota-user=projects/tamgam-upsc
+[debug] [2026-04-03T07:08:06.744Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-04-03T07:08:07.159Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2026-04-03T07:08:07.160Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2026-04-03T07:08:08.112Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions 200
+[debug] [2026-04-03T07:08:08.112Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/tamgam-upsc:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-04-03T07:08:08.113Z] Checked if tokens are valid: true, expires at: 1775203685734
+[debug] [2026-04-03T07:08:08.113Z] Checked if tokens are valid: true, expires at: 1775203685734
+[debug] [2026-04-03T07:08:08.114Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/tamgam-upsc [none]
+[debug] [2026-04-03T07:08:08.595Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/tamgam-upsc 200
+[debug] [2026-04-03T07:08:08.595Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/tamgam-upsc {"projectId":"tamgam-upsc","projectNumber":"1052274651199","displayName":"TamGam-UPSC","name":"projects/tamgam-upsc","resources":{"hostingSite":"tamgam-upsc"},"state":"ACTIVE","etag":"1_1c099aa4-c53a-4644-838d-d7752ba40e37"}
+[info] 
+[info] === Deploying to 'tamgam-upsc'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2026-04-03T07:08:08.599Z] Checked if tokens are valid: true, expires at: 1775203685734
+[debug] [2026-04-03T07:08:08.599Z] Checked if tokens are valid: true, expires at: 1775203685734
+[debug] [2026-04-03T07:08:08.599Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions [none]
+[debug] [2026-04-03T07:08:08.599Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2026-04-03T07:08:10.228Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions 200
+[debug] [2026-04-03T07:08:10.228Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions {"name":"projects/1052274651199/sites/tamgam-upsc/versions/80c988571137e529","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[tamgam-upsc]: beginning deploy... 
+[info] i  hosting[tamgam-upsc]: found 1 files in firebase-hosting 
+[debug] [2026-04-03T07:08:10.246Z] [hosting] uploading with 200 concurrency
+[debug] [2026-04-03T07:08:10.249Z] Checked if tokens are valid: true, expires at: 1775203685734
+[debug] [2026-04-03T07:08:10.249Z] Checked if tokens are valid: true, expires at: 1775203685734
+[debug] [2026-04-03T07:08:10.250Z] [hosting] hash cache [ZmlyZWJhc2UtaG9zdGluZw] stored for 1 files
+[debug] [2026-04-03T07:08:10.250Z] [hosting][hash queue][FINAL] {"max":1,"min":1,"avg":1,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":2}
+[debug] [2026-04-03T07:08:10.251Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/1052274651199/sites/tamgam-upsc/versions/80c988571137e529:populateFiles [none]
+[debug] [2026-04-03T07:08:10.251Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/1052274651199/sites/tamgam-upsc/versions/80c988571137e529:populateFiles {"files":{"/404.html":"3cc577aa38386ce8a14da13e719211fba8288934b8b395e72df3431268285ae9"}}
+[debug] [2026-04-03T07:08:11.035Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/1052274651199/sites/tamgam-upsc/versions/80c988571137e529:populateFiles 200
+[debug] [2026-04-03T07:08:11.035Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/1052274651199/sites/tamgam-upsc/versions/80c988571137e529:populateFiles {"uploadUrl":"https://upload-firebasehosting.googleapis.com/upload/sites/tamgam-upsc/versions/80c988571137e529/files"}
+[debug] [2026-04-03T07:08:11.036Z] [hosting][populate queue][FINAL] {"max":786,"min":786,"avg":786,"active":0,"complete":1,"success":1,"errored":0,"retried":0,"total":1,"elapsed":787}
+[debug] [2026-04-03T07:08:11.036Z] [hosting] uploads queued: 0
+[debug] [2026-04-03T07:08:11.036Z] [hosting][upload queue][FINAL] {"max":0,"min":9999999999,"avg":0,"active":0,"complete":0,"success":0,"errored":0,"retried":0,"total":0,"elapsed":1775200091036}
+[info] i  hosting: upload complete 
+[info] +  hosting[tamgam-upsc]: file upload complete 
+[debug] [2026-04-03T07:08:11.036Z] [hosting] deploy completed after 806ms
+[debug] [2026-04-03T07:08:11.037Z] [
+  {
+    "config": {
+      "site": "tamgam-upsc",
+      "public": "firebase-hosting",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "redirects": [
+        {
+          "source": "/",
+          "destination": "https://tamgam.in/",
+          "type": 302
+        },
+        {
+          "source": "/:path*",
+          "destination": "https://tamgam.in/:path",
+          "type": 302
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "/__/firebase/**",
+          "run": {
+            "serviceId": "tamgam-web",
+            "region": "asia-south1"
+          }
+        }
+      ]
+    },
+    "version": "projects/1052274651199/sites/tamgam-upsc/versions/80c988571137e529"
+  }
+]
+[info] i  hosting[tamgam-upsc]: finalizing version... 
+[debug] [2026-04-03T07:08:11.037Z] Checked if tokens are valid: true, expires at: 1775203685734
+[debug] [2026-04-03T07:08:11.038Z] Checked if tokens are valid: true, expires at: 1775203685734
+[debug] [2026-04-03T07:08:11.038Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions [none]
+[debug] [2026-04-03T07:08:11.263Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions 403
+[debug] [2026-04-03T07:08:11.263Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions {"error":{"code":403,"message":"Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc","consumer":"projects/tamgam-upsc","containerInfo":"tamgam-upsc","service":"cloudfunctions.googleapis.com","serviceTitle":"Cloud Functions API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc"}]}]}}
+[debug] [2026-04-03T07:08:11.264Z] [functions] failed to list functions for tamgam-upsc
+[debug] [2026-04-03T07:08:11.264Z] [functions] Request to https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions had HTTP Error: 403, Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+[debug] [2026-04-03T07:08:11.264Z] Deploying hosting site tamgam-upsc, did not have permissions to check for backends:  Failed to list functions for tamgam-upsc {"name":"FirebaseError","children":[],"exit":1,"message":"Failed to list functions for tamgam-upsc","original":{"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc","consumer":"projects/tamgam-upsc","containerInfo":"tamgam-upsc","service":"cloudfunctions.googleapis.com","serviceTitle":"Cloud Functions API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://cloudfunctions.googleapis.com/v1/projects/tamgam-upsc/locations/-/functions had HTTP Error: 403, Cloud Functions API has not been used in project tamgam-upsc before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=tamgam-upsc then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403},"status":403}
+[debug] [2026-04-03T07:08:11.265Z] Checked if tokens are valid: true, expires at: 1775203685734
+[debug] [2026-04-03T07:08:11.266Z] Checked if tokens are valid: true, expires at: 1775203685734
+[debug] [2026-04-03T07:08:11.266Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions/80c988571137e529 updateMask=status%2Cconfig
+[debug] [2026-04-03T07:08:11.266Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions/80c988571137e529 {"status":"FINALIZED","config":{"rewrites":[{"glob":"/__/firebase/**","run":{"serviceId":"tamgam-web","region":"asia-south1"}}],"redirects":[{"glob":"/","location":"https://tamgam.in/","statusCode":302},{"glob":"/:path*","location":"https://tamgam.in/:path","statusCode":302}]}}
+[debug] [2026-04-03T07:08:12.513Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions/80c988571137e529 200
+[debug] [2026-04-03T07:08:12.514Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/versions/80c988571137e529 {"name":"projects/1052274651199/sites/tamgam-upsc/versions/80c988571137e529","status":"FINALIZED","config":{"redirects":[{"statusCode":302,"location":"https://tamgam.in/","glob":"/"},{"statusCode":302,"location":"https://tamgam.in/:path","glob":"/:path*"}],"rewrites":[{"glob":"/__/firebase/**","run":{"serviceId":"tamgam-web","region":"asia-south1"}}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2026-04-03T07:08:11.250846Z","createUser":{"email":"guptaamit.work@gmail.com"},"finalizeTime":"2026-04-03T07:08:14.026141Z","finalizeUser":{"email":"guptaamit.work@gmail.com"}}
+[debug] [2026-04-03T07:08:12.514Z] [hosting] finalized version for tamgam-upsc:[object Object]
+[info] +  hosting[tamgam-upsc]: version finalized 
+[info] i  hosting[tamgam-upsc]: releasing new version... 
+[debug] [2026-04-03T07:08:12.514Z] Checked if tokens are valid: true, expires at: 1775203685734
+[debug] [2026-04-03T07:08:12.514Z] Checked if tokens are valid: true, expires at: 1775203685734
+[debug] [2026-04-03T07:08:12.515Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/channels/live/releases versionName=projects%2F1052274651199%2Fsites%2Ftamgam-upsc%2Fversions%2F80c988571137e529
+[debug] [2026-04-03T07:08:12.515Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/channels/live/releases {}
+[debug] [2026-04-03T07:08:13.541Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/tamgam-upsc/channels/live/releases 200

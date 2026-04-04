@@ -3,6 +3,13 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "standalone",
   serverExternalPackages: ["pdf-parse", "pdfjs-dist", "@napi-rs/canvas"],
+  outputFileTracingIncludes: {
+    "/*": [
+      "./node_modules/pdf-parse/dist/pdf-parse/cjs/pdf.worker.mjs",
+      "./node_modules/pdf-parse/dist/pdf-parse/esm/pdf.worker.mjs",
+      "./node_modules/pdf-parse/dist/worker/pdf.worker.mjs",
+    ],
+  },
   async redirects() {
     return [
       {

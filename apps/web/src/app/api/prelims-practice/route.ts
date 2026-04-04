@@ -17,8 +17,13 @@ import { createRequestLogger } from "@/lib/logger";
 import {
   buildUploadsContextFromExtracted,
   extractUploadFiles,
+  getUploadFileSignature,
 } from "@/lib/file-extract";
-import { savePracticeReport } from "@/lib/app-db";
+import {
+  consumeDayPassFeature,
+  reserveDayPassStudyDocument,
+  savePracticeReport,
+} from "@/lib/app-db";
 import {
   buildPersonalizationContext,
   getAuthenticatedAppUser,
@@ -294,11 +299,56 @@ export async function POST(request: Request) {
     });
     return NextResponse.json(
       {
-        message: "Prelims practice unlocks after payment. Choose a TamGam plan to continue.",
+        message: "Prelims practice is a paid feature with no free trial. Choose a TamGam plan to continue.",
         usage: getUsageMeta(authUser.profile),
       },
       { status: 402 },
     );
+  }
+
+  let usageProfile = authUser.profile;
+
+  if (usageProfile.plan === "day" && studyMaterialFiles.length > 1) {
+    logger.warn("prelims.rejected", {
+      reason: "day_pass_multiple_uploads",
+      userId: usageProfile.id,
+      action,
+      subject,
+      studyMaterialCount: studyMaterialFiles.length,
+    });
+    return NextResponse.json(
+      {
+        message:
+          "Daily Pass allows only 1 uploaded study document across the workspace. Remove extra files or upgrade for multiple uploads.",
+        usage: getUsageMeta(usageProfile),
+      },
+      { status: 403 },
+    );
+  }
+
+  if (usageProfile.plan === "day" && studyMaterialFiles.length === 1) {
+    const uploadAccess = await reserveDayPassStudyDocument(
+      usageProfile.id,
+      getUploadFileSignature(studyMaterialFiles[0]),
+    );
+
+    usageProfile = uploadAccess.profile;
+
+    if (!uploadAccess.ok) {
+      logger.warn("prelims.rejected", {
+        reason: "day_pass_study_document_limit",
+        userId: usageProfile.id,
+        action,
+        subject,
+      });
+      return NextResponse.json(
+        {
+          message: uploadAccess.message,
+          usage: getUsageMeta(usageProfile),
+        },
+        { status: 403 },
+      );
+    }
   }
 
   if (!subject) {
@@ -362,6 +412,22 @@ export async function POST(request: Request) {
 
   try {
     if (action === "generate") {
+      if (usageProfile.plan === "day" && usageProfile.dayPassUsage.prelimsTestsUsed >= 1) {
+        logger.warn("prelims.rejected", {
+          reason: "day_pass_limit_reached",
+          userId: usageProfile.id,
+          action,
+          subject,
+        });
+        return NextResponse.json(
+          {
+            message: "Daily Pass includes only 1 Prelims test. Upgrade for more tests.",
+            usage: getUsageMeta(usageProfile),
+          },
+          { status: 403 },
+        );
+      }
+
       const topicAnchor = chapter ? `${topic} | ${chapter}` : topic;
       const patternGuide = buildPrelimsPatternGuide(subject, topicAnchor);
       const response = await client.responses.create({
@@ -444,9 +510,26 @@ ${patternGuide}`,
         );
       }
 
+      const quiz = parsePrelimsQuizDraft(answer);
+
+      if (usageProfile.plan === "day") {
+        const quota = await consumeDayPassFeature(usageProfile.id, "prelims-test");
+        usageProfile = quota.profile;
+
+        if (!quota.ok) {
+          return NextResponse.json(
+            {
+              message: quota.message,
+              usage: getUsageMeta(usageProfile),
+            },
+            { status: 403 },
+          );
+        }
+      }
+
       return NextResponse.json({
-        quiz: parsePrelimsQuizDraft(answer),
-        usage: getUsageMeta(authUser.profile),
+        quiz,
+        usage: getUsageMeta(usageProfile),
       });
     }
 
@@ -502,7 +585,7 @@ ${patternGuide}`,
     return NextResponse.json({
       summary,
       feedback,
-      usage: getUsageMeta(authUser.profile),
+      usage: getUsageMeta(usageProfile),
     });
   } catch (error) {
     logger.error("prelims.failed", error, {

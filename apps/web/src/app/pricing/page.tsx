@@ -23,7 +23,7 @@ export default async function PricingPage() {
       <PageHero
         eyebrow="Pricing"
         title="Simple pricing for a serious daily UPSC loop."
-        description="TamGam gives 3 free turns, keeps current affairs free, and unlocks the full memory-driven workspace on paid plans."
+        description="TamGam starts with focused trials for Study, Current Affairs, Mains, and Notes, then unlocks the full memory-driven workspace on paid plans."
         primaryHref="/app"
         primaryLabel="Open workspace"
         secondaryHref="/help"
@@ -36,7 +36,7 @@ export default async function PricingPage() {
         description="The product is priced around daily usage, not bloated coaching-style bundles."
       >
         <div className="mb-6 rounded-[1.75rem] border border-pine/20 bg-pine/8 px-5 py-4 text-sm text-pine">
-          Current affairs is free for all users. Paid plans unlock the full AI study, Mains, Prelims, saved reports, and feedback memory.
+          Trials: Study `3 turns`, Current Affairs `3 turns`, Mains `1 free question + 1 free evaluation`, 1-pager notes `1 free note`, Prelims `paid from the first test`.
         </div>
         <div className="grid gap-5 lg:grid-cols-3">
           {pricingPlans.map((plan) => (

@@ -3,7 +3,7 @@
 :root {
   --background: #f7efe4;
   --foreground: #161311;
-  --muted: #6f665c;
+  --muted: #221c18;
   --panel: rgba(255, 255, 255, 0.78);
   --panel-strong: rgba(255, 255, 255, 0.92);
   --accent: #f07b17;
@@ -137,6 +137,57 @@ button {
   box-shadow: 0 18px 40px rgba(22, 19, 17, 0.08);
 }
 
+.button-upgrade-glow {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.button-upgrade-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1.2px;
+  background:
+    conic-gradient(
+      from 0deg,
+      rgba(240, 123, 23, 0) 0deg,
+      rgba(240, 123, 23, 0) 320deg,
+      rgba(255, 236, 214, 0.2) 334deg,
+      rgba(255, 247, 239, 0.96) 346deg,
+      rgba(240, 123, 23, 0.98) 356deg,
+      rgba(240, 123, 23, 0) 360deg
+    );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: upgrade-border-spin 3.2s linear infinite;
+  pointer-events: none;
+}
+
+.button-upgrade-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 10% 50%, rgba(255, 241, 223, 0.36), transparent 18%);
+  opacity: 0.95;
+  animation: upgrade-glow-sweep 3.2s linear infinite;
+  pointer-events: none;
+}
+
+.button-upgrade-glow > * {
+  position: relative;
+  z-index: 1;
+}
+
 .prose-rich h2,
 .prose-rich h3 {
   font-family: var(--font-newsreader), serif;
@@ -146,7 +197,7 @@ button {
 
 .prose-rich p,
 .prose-rich li {
-  color: #4f473f;
+  color: #1c1714;
 }
 
 .prose-rich ul {
@@ -170,12 +221,54 @@ button {
   }
 }
 
+@keyframes upgrade-border-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes upgrade-glow-sweep {
+  0% {
+    background:
+      radial-gradient(circle at 10% 50%, rgba(255, 241, 223, 0.36), transparent 18%);
+  }
+
+  25% {
+    background:
+      radial-gradient(circle at 50% 8%, rgba(255, 241, 223, 0.36), transparent 18%);
+  }
+
+  50% {
+    background:
+      radial-gradient(circle at 92% 50%, rgba(255, 241, 223, 0.36), transparent 18%);
+  }
+
+  75% {
+    background:
+      radial-gradient(circle at 50% 92%, rgba(255, 241, 223, 0.36), transparent 18%);
+  }
+
+  100% {
+    background:
+      radial-gradient(circle at 10% 50%, rgba(255, 241, 223, 0.36), transparent 18%);
+  }
+}
+
 @utility reveal-up {
   animation: fade-up 500ms ease both;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .reveal-up {
+    animation: none;
+  }
+
+  .button-upgrade-glow::before,
+  .button-upgrade-glow::after {
     animation: none;
   }
 }

@@ -1,5 +1,8 @@
 export type MainsQuestionDraft = {
   question: string;
+  source: "generated" | "custom";
+  totalMarks: string;
+  wordLimit: string;
   rationale: string;
   pyqSignals: string[];
   answerApproach: string[];
@@ -10,6 +13,8 @@ export type MainsEvaluationDraft = {
   transcription: string;
   verdict: string;
   score: string;
+  totalMarks: string;
+  wordLimit: string;
   strengths: string[];
   gaps: string[];
   upgrades: string[];
@@ -77,6 +82,9 @@ export function getMainsPyqPatternGuide(subject: string, topic: string, chapter:
 
 export function parseMainsQuestionDraft(raw: string): MainsQuestionDraft {
   const question = getTagContent(raw, "question");
+  const source = getTagContent(raw, "source").toLowerCase() === "custom" ? "custom" : "generated";
+  const totalMarks = getTagContent(raw, "total_marks") || "10";
+  const wordLimit = getTagContent(raw, "word_limit") || "150";
   const rationale = getTagContent(raw, "rationale");
   const pyqSignals = toLineList(getTagContent(raw, "pyq_signals")).slice(0, 6);
   const answerApproach = toLineList(getTagContent(raw, "answer_approach")).slice(0, 7);
@@ -88,6 +96,9 @@ export function parseMainsQuestionDraft(raw: string): MainsQuestionDraft {
 
   return {
     question,
+    source,
+    totalMarks,
+    wordLimit,
     rationale,
     pyqSignals,
     answerApproach,
@@ -99,6 +110,8 @@ export function parseMainsEvaluationDraft(raw: string): MainsEvaluationDraft {
   const transcription = getTagContent(raw, "transcription");
   const verdict = getTagContent(raw, "verdict");
   const score = getTagContent(raw, "score");
+  const totalMarks = getTagContent(raw, "total_marks") || "";
+  const wordLimit = getTagContent(raw, "word_limit") || "";
   const strengths = toLineList(getTagContent(raw, "strengths")).slice(0, 8);
   const gaps = toLineList(getTagContent(raw, "gaps")).slice(0, 8);
   const upgrades = toLineList(getTagContent(raw, "upgrades")).slice(0, 8);
@@ -113,6 +126,8 @@ export function parseMainsEvaluationDraft(raw: string): MainsEvaluationDraft {
     transcription,
     verdict,
     score,
+    totalMarks,
+    wordLimit,
     strengths,
     gaps,
     upgrades,

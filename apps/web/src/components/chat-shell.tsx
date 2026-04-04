@@ -97,13 +97,82 @@ function extractLessonSection(content: string, tag: string) {
   return content.match(pattern)?.[1]?.trim() || "";
 }
 
+function stripLessonTags(content: string) {
+  return content
+    .replace(/<\s*\/?\s*lesson_feedback\s*>/gi, "")
+    .replace(/<\s*\/?\s*next_question\s*>/gi, "")
+    .trim();
+}
+
+function toLessonParagraphs(content: string) {
+  return stripLessonTags(normalizeLessonTagText(content))
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+}
+
+function looksLikeQuestionParagraph(paragraph: string) {
+  const value = paragraph.trim();
+
+  if (!value) {
+    return false;
+  }
+
+  return (
+    /[?؟]$/.test(value) ||
+    /^(can|could|would|will|what|why|how|which|who|where|when|do|does|did|is|are|was|were)\b/i.test(
+      value,
+    )
+  );
+}
+
+function deriveLessonCardsFromPlainText(content: string): LessonCardContent | null {
+  const paragraphs = toLessonParagraphs(content);
+
+  if (!paragraphs.length) {
+    return null;
+  }
+
+  const parts = [...paragraphs];
+  let nextQuestion = "";
+  const lastParagraph = parts.at(-1) || "";
+
+  if (looksLikeQuestionParagraph(lastParagraph)) {
+    nextQuestion = parts.pop() || "";
+  } else {
+    const questionMatch = lastParagraph.match(/(.+?\?)(?:\s|$)/);
+
+    if (questionMatch) {
+      nextQuestion = questionMatch[1].trim();
+      const remaining = lastParagraph.replace(questionMatch[1], "").trim();
+
+      if (remaining) {
+        parts[parts.length - 1] = remaining;
+      } else {
+        parts.pop();
+      }
+    }
+  }
+
+  const feedback = parts.join("\n\n").trim();
+
+  if (!feedback && !nextQuestion) {
+    return null;
+  }
+
+  return {
+    feedback,
+    nextQuestion,
+  };
+}
+
 function parseLessonCards(content: string): LessonCardContent | null {
   const normalized = normalizeLessonTagText(content);
   const feedback = extractLessonSection(normalized, "lesson_feedback");
   const nextQuestion = extractLessonSection(normalized, "next_question");
 
   if (!feedback && !nextQuestion) {
-    return null;
+    return deriveLessonCardsFromPlainText(content);
   }
 
   return {
@@ -294,7 +363,7 @@ export function ChatShell({ initialProfile }: { initialProfile: UserProfile }) {
               <div className="rounded-full border border-[#f07b17]/16 bg-[#fff4ea] px-4 py-2 text-sm font-semibold text-[#d96200]">
                 {usage.hasActivePlan
                   ? `${usage.plan.toUpperCase()} plan active`
-                  : `${usage.remainingFreeTurns} free turns left`}
+                  : `${usage.remainingFreeTurns} free Study turns left`}
               </div>
               <button
                 type="button"
@@ -317,7 +386,10 @@ export function ChatShell({ initialProfile }: { initialProfile: UserProfile }) {
                 <FileUp size={18} />
                 Global material
               </button>
-              <Link href="/pricing" className="button-secondary">
+              <Link
+                href="/pricing"
+                className={`button-secondary ${usage.hasActivePlan ? "" : "button-upgrade-glow"}`}
+              >
                 Upgrade
               </Link>
             </div>
@@ -395,8 +467,8 @@ export function ChatShell({ initialProfile }: { initialProfile: UserProfile }) {
                   Keep studying with TamGam after the free trial ends.
                 </h2>
                 <p className="mt-3 text-sm leading-7 text-copy md:text-base">
-                  Current affairs remains free. For guided study, practice modules, notes, and
-                  report memory, choose a plan below.
+                  Study turns are over. For deeper Study, Current Affairs beyond the trial,
+                  practice modules, notes, and report memory, choose a plan below.
                 </p>
               </div>
             </div>
@@ -405,7 +477,9 @@ export function ChatShell({ initialProfile }: { initialProfile: UserProfile }) {
               <div className="rounded-[1.8rem] border border-border-subtle bg-white/84 p-5">
                 <div className="text-lg font-semibold text-ink">Daily Pass</div>
                 <div className="mt-2 editorial-title text-4xl text-ink">Rs 11</div>
-                <div className="text-sm text-copy">One focused day of access</div>
+                <div className="text-sm text-copy">
+                  1 note, 1 Prelims test, 1 Mains evaluation, Current Affairs after trial, and 1 uploaded study document
+                </div>
                 <div className="mt-5">
                   <PlanCheckoutButton planId="day" label="Buy daily pass" />
                 </div>

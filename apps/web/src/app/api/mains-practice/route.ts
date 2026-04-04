@@ -16,8 +16,14 @@ import { createRequestLogger } from "@/lib/logger";
 import {
   buildUploadsContextFromExtracted,
   extractUploadFiles,
+  getUploadFileSignature,
 } from "@/lib/file-extract";
-import { savePracticeReport } from "@/lib/app-db";
+import {
+  consumeFeatureTrial,
+  consumeDayPassFeature,
+  reserveDayPassStudyDocument,
+  savePracticeReport,
+} from "@/lib/app-db";
 import {
   buildPersonalizationContext,
   getAuthenticatedAppUser,
@@ -114,6 +120,9 @@ export async function POST(request: Request) {
   const topic = asTrimmedString(formData.get("topic"));
   const chapter = asTrimmedString(formData.get("chapter"));
   const question = asTrimmedString(formData.get("question"));
+  const customQuestion = asTrimmedString(formData.get("customQuestion"));
+  const totalMarks = asTrimmedString(formData.get("totalMarks")) || "10";
+  const wordLimit = asTrimmedString(formData.get("wordLimit")) || "150";
   const studyMaterialFiles = toFiles(formData.getAll("studyMaterial"));
   const answerFiles = toFiles(formData.getAll("answerUpload"));
   const authUser = await getAuthenticatedAppUser();
@@ -123,20 +132,49 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Sign in with Google to use Mains practice." }, { status: 401 });
   }
 
-  if (!getUsageMeta(authUser.profile).hasActivePlan) {
+  let usageProfile = authUser.profile;
+
+  if (usageProfile.plan === "day" && studyMaterialFiles.length > 1) {
     logger.warn("mains.rejected", {
-      reason: "plan_required",
-      userId: authUser.profile.id,
+      reason: "day_pass_multiple_uploads",
+      userId: usageProfile.id,
       action,
       subject,
+      studyMaterialCount: studyMaterialFiles.length,
     });
     return NextResponse.json(
       {
-        message: "Mains practice unlocks after payment. Choose a TamGam plan to continue.",
-        usage: getUsageMeta(authUser.profile),
+        message:
+          "Daily Pass allows only 1 uploaded study document across the workspace. Remove extra files or upgrade for multiple uploads.",
+        usage: getUsageMeta(usageProfile),
       },
-      { status: 402 },
+      { status: 403 },
     );
+  }
+
+  if (usageProfile.plan === "day" && studyMaterialFiles.length === 1) {
+    const uploadAccess = await reserveDayPassStudyDocument(
+      usageProfile.id,
+      getUploadFileSignature(studyMaterialFiles[0]),
+    );
+
+    usageProfile = uploadAccess.profile;
+
+    if (!uploadAccess.ok) {
+      logger.warn("mains.rejected", {
+        reason: "day_pass_study_document_limit",
+        userId: usageProfile.id,
+        action,
+        subject,
+      });
+      return NextResponse.json(
+        {
+          message: uploadAccess.message,
+          usage: getUsageMeta(usageProfile),
+        },
+        { status: 403 },
+      );
+    }
   }
 
   if (!subject) {
@@ -148,7 +186,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Subject is required for mains practice." }, { status: 400 });
   }
 
-  if (!topic && action === "generate") {
+  if (!topic && !customQuestion && action === "generate") {
     logger.warn("mains.rejected", {
       reason: "missing_topic",
       userId: authUser.profile.id,
@@ -200,17 +238,59 @@ export async function POST(request: Request) {
 
   try {
     if (action === "generate") {
-      const patternGuide = getMainsPyqPatternGuide(subject, topic, chapter);
+      if (!getUsageMeta(usageProfile).hasActivePlan && usageProfile.featureTrialUsage.mainsQuestionsUsed >= 1) {
+        logger.warn("mains.rejected", {
+          reason: "free_question_trial_used",
+          userId: usageProfile.id,
+          action,
+          subject,
+        });
+        return NextResponse.json(
+          {
+            message:
+              "You have already used the free mains trial question. Choose a TamGam plan to continue.",
+            usage: getUsageMeta(usageProfile),
+          },
+          { status: 402 },
+        );
+      }
+
+      if (usageProfile.plan === "day" && usageProfile.dayPassUsage.mainsQuestionsUsed >= 1) {
+        logger.warn("mains.rejected", {
+          reason: "day_pass_limit_reached",
+          userId: usageProfile.id,
+          action,
+          subject,
+        });
+        return NextResponse.json(
+          {
+            message:
+              "Daily Pass includes only 1 Mains question and evaluation slot. Upgrade for more practice.",
+            usage: getUsageMeta(usageProfile),
+          },
+          { status: 403 },
+        );
+      }
+
+      const patternGuide = getMainsPyqPatternGuide(subject, topic || customQuestion, chapter);
+      const usingCustomQuestion = Boolean(customQuestion);
       const response = await client.responses.create({
         model,
         ...(reasoning ? { reasoning } : {}),
         text: {
           verbosity: textVerbosity,
         },
-        instructions: `You are TamGam's dedicated mains question setter. Generate exactly one UPSC mains practice question anchored to the selected subject, topic, and chapter. Frame the question in the spirit of the last 10 years of UPSC mains PYQs for that area: analytical, directive-driven, and exam-realistic.
+        instructions: `You are TamGam's dedicated mains question setter. ${
+          usingCustomQuestion
+            ? "The user has supplied a mains question. Keep that question text intact and prepare a UPSC-style practice brief around it."
+            : "Generate exactly one UPSC mains practice question anchored to the selected subject, topic, and chapter. Frame the question in the spirit of the last 10 years of UPSC mains PYQs for that area: analytical, directive-driven, and exam-realistic."
+        }
 
 Return exactly these tags and nothing else:
 <question>...</question>
+<source>generated or custom</source>
+<total_marks>...</total_marks>
+<word_limit>...</word_limit>
 <rationale>...</rationale>
 <pyq_signals>
 - ...
@@ -223,7 +303,9 @@ Return exactly these tags and nothing else:
 </keywords>
 
 Rules:
-- Make the question answerable in roughly 150 to 250 words.
+- Total marks must be ${totalMarks}.
+- Word limit must be ${wordLimit}.
+- Make the question answerable within the given word limit.
 - Do not claim that you are quoting an exact PYQ unless it is clearly warranted.
 - Keep the rationale short and exam-focused.
 - Pyq signals should explain why this question matches recent UPSC framing.
@@ -248,7 +330,9 @@ Rules:
             : []),
           {
             role: "user",
-            content: `Subject: ${subject}\nTopic: ${topic}\nChapter: ${chapter || "Use the topic as the chapter anchor."}\n${patternGuide}`,
+            content: `Subject: ${subject}\nTopic: ${topic || "Use the supplied question as the anchor."}\nChapter: ${chapter || "Use the topic as the chapter anchor."}\nTotal marks: ${totalMarks}\nWord limit: ${wordLimit}\n${
+              usingCustomQuestion ? `Custom question: ${customQuestion}\nKeep this exact question text.` : ""
+            }\n${patternGuide}`,
           },
         ],
         max_output_tokens: 900,
@@ -265,16 +349,55 @@ Rules:
         );
       }
 
+      const draft = parseMainsQuestionDraft(answer);
+
+      if (usageProfile.plan === "day") {
+        const quota = await consumeDayPassFeature(usageProfile.id, "mains-question");
+        usageProfile = quota.profile;
+
+        if (!quota.ok) {
+          return NextResponse.json(
+            {
+              message: quota.message,
+              usage: getUsageMeta(usageProfile),
+            },
+            { status: 403 },
+          );
+        }
+      }
+
+      if (!getUsageMeta(usageProfile).hasActivePlan) {
+        const trial = await consumeFeatureTrial(usageProfile.id, "mains-question");
+        usageProfile = trial.profile;
+      }
+
       return NextResponse.json({
-        draft: parseMainsQuestionDraft(answer),
-        usage: getUsageMeta(authUser.profile),
+        draft,
+        usage: getUsageMeta(usageProfile),
       });
     }
 
-    if (!question) {
+    if (!question && !customQuestion) {
       return NextResponse.json(
         { message: "Generate or provide a mains question before evaluating the answer." },
         { status: 400 },
+      );
+    }
+
+    if (!getUsageMeta(usageProfile).hasActivePlan && usageProfile.featureTrialUsage.mainsEvaluationsUsed >= 1) {
+      logger.warn("mains.rejected", {
+        reason: "free_evaluation_trial_used",
+        userId: usageProfile.id,
+        action,
+        subject,
+      });
+      return NextResponse.json(
+        {
+          message:
+            "You have already used the free mains evaluation. Choose a TamGam plan to continue.",
+          usage: getUsageMeta(usageProfile),
+        },
+        { status: 402 },
       );
     }
 
@@ -293,6 +416,8 @@ Return exactly these tags and nothing else:
 <transcription>...</transcription>
 <verdict>...</verdict>
 <score>...</score>
+<total_marks>...</total_marks>
+<word_limit>...</word_limit>
 <strengths>
 - ...
 </strengths>
@@ -307,11 +432,13 @@ Return exactly these tags and nothing else:
 
 Rules:
 - Be strict, specific, and constructive.
-- Score format must be like: 5.5/10 or 9/15.
+- Score format must be like: 5.5/10 or 9/15 and must use the provided total marks as the denominator.
+- Repeat the provided total marks and word limit in the matching tags.
 - In the transcription, reconstruct the answer cleanly. If a word is unclear, infer conservatively.
 - Strengths: what the student did well.
 - Gaps: what cost marks.
 - Upgrades: concrete changes for the next attempt.
+- Evaluate whether the answer showed the right depth for the given word limit.
 - Improved direction: 1 short paragraph describing how the answer should have been structured.
 - Next step: one clear practice task for the student.`,
       input: [
@@ -328,7 +455,9 @@ Rules:
           content: [
             {
               type: "input_text",
-              text: `Subject: ${subject}\nTopic: ${topic || "Derived from the question"}\nChapter: ${chapter || "Derived from the question"}\nQuestion: ${question}\nTask: Transcribe the handwritten answer and evaluate it in detail.`,
+              text: `Subject: ${subject}\nTopic: ${topic || "Derived from the question"}\nChapter: ${chapter || "Derived from the question"}\nQuestion: ${
+                question || customQuestion
+              }\nTotal marks: ${totalMarks}\nWord limit: ${wordLimit}\nTask: Transcribe the handwritten answer and evaluate it in detail against the given marks and word limit.`,
             },
             ...answerInputParts,
           ],
@@ -362,9 +491,14 @@ Rules:
       weaknesses: draft.gaps,
     });
 
+    if (!getUsageMeta(usageProfile).hasActivePlan) {
+      const trial = await consumeFeatureTrial(usageProfile.id, "mains-evaluation");
+      usageProfile = trial.profile;
+    }
+
     return NextResponse.json({
       draft,
-      usage: getUsageMeta(authUser.profile),
+      usage: getUsageMeta(usageProfile),
     });
   } catch (error) {
     logger.error("mains.failed", error, {

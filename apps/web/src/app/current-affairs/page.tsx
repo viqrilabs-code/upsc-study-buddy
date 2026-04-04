@@ -43,7 +43,7 @@ export default function CurrentAffairsPage() {
       <PageHero
         eyebrow="Current affairs"
         title="Upload the paper, open Diya, and study current affairs article by article."
-        description="The current affairs surface is free for all users. Upload The Indian Express and your UPSC magazine, then let Diya turn them into a friendly teacher-student class with one MCQ for every news issue covered."
+        description="Start with 3 current-affairs trial turns. Upload The Indian Express and your UPSC magazine, then let Diya turn them into a teacher-student class with one MCQ for every news issue covered."
         primaryHref="#diya-current-affairs"
         primaryLabel="Launch Diya"
         secondaryHref="/notes"
@@ -56,7 +56,7 @@ export default function CurrentAffairsPage() {
         description="This page shows how the product treats current affairs as a structured learning pipeline rather than a random reading feed."
       >
         <div className="mb-5 inline-flex items-center rounded-full bg-pine/12 px-4 py-2 text-sm font-semibold text-pine">
-          Free access for all users
+          3 free current-affairs turns
         </div>
         <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="glass-panel rounded-[2rem] p-6 md:p-8">
@@ -132,7 +132,7 @@ export default function CurrentAffairsPage() {
       <SectionShell
         eyebrow="Live studio"
         title="Diya reads the uploaded sources and teaches from them."
-        description="Use this free class mode for newspaper-led preparation, issue mapping, background context, and article-wise MCQ checks."
+        description="Use this class mode for newspaper-led preparation, issue mapping, background context, and article-wise MCQ checks."
       >
         <CurrentAffairsStudio />
       </SectionShell>

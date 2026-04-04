@@ -11,8 +11,8 @@ export const planCatalog = {
     cadenceLabel: "",
     amountPaise: 0,
     durationDays: 0,
-    shortLabel: "3 free turns",
-    description: "Explore the agent before subscribing.",
+    shortLabel: "Feature trials",
+    description: "Explore Study, Current Affairs, Mains, and Notes before subscribing.",
   },
   day: {
     id: "day" as const,
@@ -22,7 +22,8 @@ export const planCatalog = {
     amountPaise: 1100,
     durationDays: 1,
     shortLabel: "Rs 11/day",
-    description: "A light daily pass for focused revision and practice.",
+    description:
+      "A light daily pass with 1 note, 1 Prelims test, 1 Mains evaluation, and 1 uploaded study document across the workspace.",
   },
   month: {
     id: "month" as const,

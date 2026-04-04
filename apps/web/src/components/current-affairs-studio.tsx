@@ -29,6 +29,9 @@ type UsageMeta = {
   hasActivePlan: boolean;
   freeTurnsUsed: number;
   remainingFreeTurns: number;
+  featureTrials?: {
+    currentAffairsTurnsRemaining: number;
+  };
 };
 
 const currentAffairsPrompts = [
@@ -158,6 +161,7 @@ export function CurrentAffairsStudio({
   const [model, setModel] = useState("");
   const [usage, setUsage] = useState<UsageMeta | null>(null);
   const [newspaperFiles, setNewspaperFiles] = useState<File[]>([]);
+  const [currentAffairsSessionId, setCurrentAffairsSessionId] = useState("");
   const [sessionKey, setSessionKey] = useState(() => `current-affairs-${crypto.randomUUID()}`);
   const [showFeedbackPrompt, setShowFeedbackPrompt] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
@@ -171,6 +175,7 @@ export function CurrentAffairsStudio({
 
   function setNewspaperList(fileList: FileList | null) {
     setNewspaperFiles(fileList ? Array.from(fileList).slice(0, 2) : []);
+    setCurrentAffairsSessionId("");
   }
   function resetSession() {
     setMessages(initialMessages);
@@ -179,6 +184,7 @@ export function CurrentAffairsStudio({
     setModel("");
     setShowFeedbackPrompt(false);
     setNewspaperFiles([]);
+    setCurrentAffairsSessionId("");
     setSessionKey(`current-affairs-${crypto.randomUUID()}`);
   }
 
@@ -220,10 +226,15 @@ export function CurrentAffairsStudio({
         formData.set("goal", goal);
         formData.set("mode", "current-affairs");
         formData.set("messages", JSON.stringify(apiMessages));
+        if (currentAffairsSessionId) {
+          formData.set("currentAffairsSessionId", currentAffairsSessionId);
+        }
 
-        newspaperFiles.forEach((file) => {
-          formData.append("newspaper", file);
-        });
+        if (!currentAffairsSessionId) {
+          newspaperFiles.forEach((file) => {
+            formData.append("newspaper", file);
+          });
+        }
         globalStudyMaterialFiles.forEach((file) => {
           formData.append("studyMaterial", file);
         });
@@ -238,6 +249,7 @@ export function CurrentAffairsStudio({
           message?: string;
           model?: string;
           usage?: UsageMeta;
+          currentAffairsSessionId?: string;
         };
 
         if (!response.ok) {
@@ -250,6 +262,9 @@ export function CurrentAffairsStudio({
 
         setUsage(data.usage || null);
         setModel(data.model || "");
+        if (data.currentAffairsSessionId) {
+          setCurrentAffairsSessionId(data.currentAffairsSessionId);
+        }
         setMessages((current) => [
           ...current,
           {
@@ -296,11 +311,13 @@ export function CurrentAffairsStudio({
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <span className="rounded-full bg-[#fff4ea] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#d96200]">
-            Free access
+            Paid after 3 free turns
           </span>
           {usage ? (
             <span className="rounded-full bg-white/88 px-3 py-1 text-xs font-semibold text-ink">
-              {usage.hasActivePlan ? `${usage.plan.toUpperCase()} plan` : `${usage.remainingFreeTurns} free turns left`}
+              {usage.hasActivePlan
+                ? `${usage.plan.toUpperCase()} plan`
+                : `${usage.featureTrials?.currentAffairsTurnsRemaining ?? 0} free current-affairs turns left`}
             </span>
           ) : null}
           {model ? (

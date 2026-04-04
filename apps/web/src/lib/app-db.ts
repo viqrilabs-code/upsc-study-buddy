@@ -13,6 +13,20 @@ export type AppUserInput = {
   image?: string | null;
 };
 
+export type DayPassUsage = {
+  revisionNotesUsed: number;
+  prelimsTestsUsed: number;
+  mainsQuestionsUsed: number;
+  studyDocumentSignature: string;
+};
+
+export type FeatureTrialUsage = {
+  currentAffairsTurnsUsed: number;
+  mainsQuestionsUsed: number;
+  mainsEvaluationsUsed: number;
+  revisionNotesUsed: number;
+};
+
 export type UserProfile = {
   id: string;
   email: string;
@@ -28,6 +42,8 @@ export type UserProfile = {
   weaknesses: string[];
   strengthSignals: Record<string, number>;
   weaknessSignals: Record<string, number>;
+  dayPassUsage: DayPassUsage;
+  featureTrialUsage: FeatureTrialUsage;
   averageRating: number;
   feedbackCount: number;
   createdAt: string;
@@ -114,12 +130,64 @@ type LocalStore = {
 
 const LOCAL_STORE_PATH = path.join(process.cwd(), "data", "private", "local-store.json");
 
+const defaultDayPassUsage = (): DayPassUsage => ({
+  revisionNotesUsed: 0,
+  prelimsTestsUsed: 0,
+  mainsQuestionsUsed: 0,
+  studyDocumentSignature: "",
+});
+
+const defaultFeatureTrialUsage = (): FeatureTrialUsage => ({
+  currentAffairsTurnsUsed: 0,
+  mainsQuestionsUsed: 0,
+  mainsEvaluationsUsed: 0,
+  revisionNotesUsed: 0,
+});
+
 function nowIso() {
   return new Date().toISOString();
 }
 
 function getDefaultExpiry() {
   return new Date(0).toISOString();
+}
+
+function normalizeDayPassUsage(value: unknown): DayPassUsage {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return defaultDayPassUsage();
+  }
+
+  const source = value as Partial<DayPassUsage>;
+
+  return {
+    revisionNotesUsed:
+      typeof source.revisionNotesUsed === "number" ? source.revisionNotesUsed : 0,
+    prelimsTestsUsed:
+      typeof source.prelimsTestsUsed === "number" ? source.prelimsTestsUsed : 0,
+    mainsQuestionsUsed:
+      typeof source.mainsQuestionsUsed === "number" ? source.mainsQuestionsUsed : 0,
+    studyDocumentSignature:
+      typeof source.studyDocumentSignature === "string" ? source.studyDocumentSignature : "",
+  };
+}
+
+function normalizeFeatureTrialUsage(value: unknown): FeatureTrialUsage {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return defaultFeatureTrialUsage();
+  }
+
+  const source = value as Partial<FeatureTrialUsage>;
+
+  return {
+    currentAffairsTurnsUsed:
+      typeof source.currentAffairsTurnsUsed === "number" ? source.currentAffairsTurnsUsed : 0,
+    mainsQuestionsUsed:
+      typeof source.mainsQuestionsUsed === "number" ? source.mainsQuestionsUsed : 0,
+    mainsEvaluationsUsed:
+      typeof source.mainsEvaluationsUsed === "number" ? source.mainsEvaluationsUsed : 0,
+    revisionNotesUsed:
+      typeof source.revisionNotesUsed === "number" ? source.revisionNotesUsed : 0,
+  };
 }
 
 function createDefaultUserProfile(input: AppUserInput): UserProfile {
@@ -140,6 +208,8 @@ function createDefaultUserProfile(input: AppUserInput): UserProfile {
     weaknesses: [],
     strengthSignals: {},
     weaknessSignals: {},
+    dayPassUsage: defaultDayPassUsage(),
+    featureTrialUsage: defaultFeatureTrialUsage(),
     averageRating: 0,
     feedbackCount: 0,
     createdAt: now,
@@ -205,6 +275,8 @@ function normalizeUserProfile(profile: UserProfile, fallback: AppUserInput) {
     image: profile.image || fallback.image?.trim() || "",
     subscriptionOrderId: profile.subscriptionOrderId || "",
     subscriptionPaymentId: profile.subscriptionPaymentId || "",
+    dayPassUsage: normalizeDayPassUsage(profile.dayPassUsage),
+    featureTrialUsage: normalizeFeatureTrialUsage(profile.featureTrialUsage),
   };
 }
 
@@ -281,6 +353,221 @@ export function getRemainingFreeTurns(profile: UserProfile) {
   }
 
   return Math.max(0, FREE_TURN_LIMIT - profile.freeTurnsUsed);
+}
+
+export function getCurrentAffairsRemainingTrialTurns(profile: UserProfile) {
+  if (hasActiveSubscription(profile)) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  return Math.max(0, 3 - normalizeFeatureTrialUsage(profile.featureTrialUsage).currentAffairsTurnsUsed);
+}
+
+export function hasActiveDayPass(profile: UserProfile) {
+  return hasActiveSubscription(profile) && profile.plan === "day";
+}
+
+export function getDayPassLimitSnapshot(profile: UserProfile) {
+  const usage = normalizeDayPassUsage(profile.dayPassUsage);
+
+  return {
+    revisionNotesRemaining: Math.max(0, 1 - usage.revisionNotesUsed),
+    prelimsTestsRemaining: Math.max(0, 1 - usage.prelimsTestsUsed),
+    mainsQuestionsRemaining: Math.max(0, 1 - usage.mainsQuestionsUsed),
+    studyDocumentAttached: Boolean(usage.studyDocumentSignature),
+  };
+}
+
+export function getFeatureTrialSnapshot(profile: UserProfile) {
+  const usage = normalizeFeatureTrialUsage(profile.featureTrialUsage);
+
+  return {
+    currentAffairsTurnsRemaining: Math.max(0, 3 - usage.currentAffairsTurnsUsed),
+    mainsQuestionsRemaining: Math.max(0, 1 - usage.mainsQuestionsUsed),
+    mainsEvaluationsRemaining: Math.max(0, 1 - usage.mainsEvaluationsUsed),
+    revisionNotesRemaining: Math.max(0, 1 - usage.revisionNotesUsed),
+    prelimsTrialsRemaining: 0,
+  };
+}
+
+async function persistUserProfile(nextProfile: UserProfile) {
+  const firestore = getAdminFirestore();
+
+  if (firestore) {
+    await firestore.collection("users").doc(nextProfile.id).set(nextProfile, { merge: true });
+    return nextProfile;
+  }
+
+  const store = await readLocalStore();
+  store.users[nextProfile.id] = nextProfile;
+  await writeLocalStore(store);
+  return nextProfile;
+}
+
+export async function consumeDayPassFeature(
+  userId: string,
+  feature: "revision-notes" | "prelims-test" | "mains-question",
+) {
+  const profile = await getUserProfile(userId);
+
+  if (!profile) {
+    throw new Error("User profile not found.");
+  }
+
+  if (!hasActiveDayPass(profile)) {
+    return {
+      ok: true as const,
+      profile,
+    };
+  }
+
+  const currentUsage = normalizeDayPassUsage(profile.dayPassUsage);
+  const field =
+    feature === "revision-notes"
+      ? "revisionNotesUsed"
+      : feature === "prelims-test"
+        ? "prelimsTestsUsed"
+        : "mainsQuestionsUsed";
+
+  if (currentUsage[field] >= 1) {
+    const message =
+      feature === "revision-notes"
+        ? "Daily Pass includes only 1 1-pager revision note. Upgrade for more note generations."
+        : feature === "prelims-test"
+          ? "Daily Pass includes only 1 Prelims test. Upgrade for more tests."
+          : "Daily Pass includes only 1 Mains question and evaluation slot. Upgrade for more practice.";
+
+    return {
+      ok: false as const,
+      profile,
+      message,
+    };
+  }
+
+  const nextProfile: UserProfile = {
+    ...profile,
+    dayPassUsage: {
+      ...currentUsage,
+      [field]: currentUsage[field] + 1,
+    },
+    updatedAt: nowIso(),
+  };
+
+  return {
+    ok: true as const,
+    profile: await persistUserProfile(nextProfile),
+  };
+}
+
+export async function consumeFeatureTrial(
+  userId: string,
+  feature:
+    | "current-affairs-turn"
+    | "mains-question"
+    | "mains-evaluation"
+    | "revision-notes",
+) {
+  const profile = await getUserProfile(userId);
+
+  if (!profile) {
+    throw new Error("User profile not found.");
+  }
+
+  if (hasActiveSubscription(profile)) {
+    return {
+      ok: true as const,
+      profile,
+    };
+  }
+
+  const currentUsage = normalizeFeatureTrialUsage(profile.featureTrialUsage);
+  const field =
+    feature === "current-affairs-turn"
+      ? "currentAffairsTurnsUsed"
+      : feature === "mains-question"
+        ? "mainsQuestionsUsed"
+        : feature === "mains-evaluation"
+          ? "mainsEvaluationsUsed"
+          : "revisionNotesUsed";
+  const limit = feature === "current-affairs-turn" ? 3 : 1;
+
+  if (currentUsage[field] >= limit) {
+    const message =
+      feature === "current-affairs-turn"
+        ? "Current affairs gives 3 free turns. Choose a TamGam plan to continue."
+        : feature === "mains-question"
+          ? "Your free mains trial question is over. Choose a TamGam plan to continue."
+          : feature === "mains-evaluation"
+            ? "Your free mains evaluation is over. Choose a TamGam plan to continue."
+            : "Your free 1-pager note is over. Choose a TamGam plan to continue.";
+
+    return {
+      ok: false as const,
+      profile,
+      message,
+    };
+  }
+
+  const nextProfile: UserProfile = {
+    ...profile,
+    featureTrialUsage: {
+      ...currentUsage,
+      [field]: currentUsage[field] + 1,
+    },
+    updatedAt: nowIso(),
+  };
+
+  return {
+    ok: true as const,
+    profile: await persistUserProfile(nextProfile),
+  };
+}
+
+export async function reserveDayPassStudyDocument(userId: string, documentSignature: string) {
+  const profile = await getUserProfile(userId);
+
+  if (!profile) {
+    throw new Error("User profile not found.");
+  }
+
+  if (!hasActiveDayPass(profile) || !documentSignature) {
+    return {
+      ok: true as const,
+      profile,
+    };
+  }
+
+  const currentUsage = normalizeDayPassUsage(profile.dayPassUsage);
+
+  if (!currentUsage.studyDocumentSignature) {
+    const nextProfile: UserProfile = {
+      ...profile,
+      dayPassUsage: {
+        ...currentUsage,
+        studyDocumentSignature: documentSignature,
+      },
+      updatedAt: nowIso(),
+    };
+
+    return {
+      ok: true as const,
+      profile: await persistUserProfile(nextProfile),
+    };
+  }
+
+  if (currentUsage.studyDocumentSignature === documentSignature) {
+    return {
+      ok: true as const,
+      profile,
+    };
+  }
+
+  return {
+    ok: false as const,
+    profile,
+    message:
+      "Daily Pass allows only 1 uploaded study document across the workspace. Reuse the same document or upgrade for multiple uploads.",
+  };
 }
 
 export async function getOrCreateUserProfile(input: AppUserInput) {
@@ -923,6 +1210,7 @@ export async function syncRefundStateForOrder(input: {
     subscriptionExpiresAt: getDefaultExpiry(),
     subscriptionOrderId: "",
     subscriptionPaymentId: "",
+    dayPassUsage: defaultDayPassUsage(),
     updatedAt: nowIso(),
   };
   const firestore = getAdminFirestore();
@@ -970,6 +1258,7 @@ export async function activatePlanForUser(input: {
     subscriptionExpiresAt: expiresAt,
     subscriptionOrderId: input.planId === "free" ? "" : input.orderId,
     subscriptionPaymentId: input.planId === "free" ? "" : input.paymentId,
+    dayPassUsage: defaultDayPassUsage(),
     updatedAt: nowIso(),
   };
 

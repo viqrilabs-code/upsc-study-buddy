@@ -14,7 +14,7 @@ import {
 export const metadata = buildMetadata({
   title: "Home",
   description:
-    "TamGam is a UPSC study companion with Google sign-in, free current affairs, saved reports, weakness-aware practice, and paid access after 3 free turns.",
+    "TamGam is a UPSC study companion with Google sign-in, feature-specific free trials, saved reports, weakness-aware practice, and paid access for the full workspace.",
 });
 
 export default function HomePage() {

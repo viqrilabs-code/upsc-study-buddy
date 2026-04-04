@@ -1,14 +1,17 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import {
-  buildAdminCurrentAffairsContext,
-  buildUserNewspaperContext,
   getLatestAdminCurrentAffairsPack,
 } from "@/lib/current-affairs-pack";
+import {
+  buildCurrentAffairsTurnContext,
+  ensureCurrentAffairsSession,
+} from "@/lib/current-affairs-session";
 import {
   buildUploadsContextFromExtracted,
   type ExtractedUpload,
   extractUploadFiles,
+  getUploadFileSignature,
 } from "@/lib/file-extract";
 import { buildIgnouReferenceContext } from "@/lib/ignou-reference";
 import { createRequestLogger } from "@/lib/logger";
@@ -20,10 +23,12 @@ import {
 } from "@/lib/openai";
 import {
   buildPersonalizationContext,
+  consumeCurrentAffairsTurnIfNeeded,
   consumeTurnIfNeeded,
   getAuthenticatedAppUser,
   getUsageMeta,
 } from "@/lib/product-access";
+import { consumeFeatureTrial, reserveDayPassStudyDocument } from "@/lib/app-db";
 
 type ChatRole = "user" | "assistant";
 
@@ -218,26 +223,6 @@ function looksLikeMcqAnswer(message: string) {
   return mcqAnswerPattern.test(trimmed);
 }
 
-function buildCurrentAffairsSourceContext(
-  adminPackContext: string,
-  userNewspaperContext: string,
-) {
-  const sections = [adminPackContext, userNewspaperContext].filter(Boolean);
-
-  if (!sections.length) {
-    return "";
-  }
-
-  return [
-    "Current affairs source pack for this session:",
-    "Use these curated sources as the primary source of truth for current-affairs answers.",
-    "Only use the UPSC-relevant issue sections from the newspapers and discard sports, entertainment, lifestyle, or other non-exam material.",
-    "If both the admin daily pack and a user newspaper are present, synthesize both before answering.",
-    "",
-    ...sections,
-  ].join("\n\n");
-}
-
 function getBuddyInstruction(
   mode: string,
   detailedMode: boolean,
@@ -426,6 +411,91 @@ function extractAnswerText(response: { output_text?: unknown; output?: unknown }
   return parts.join("\n\n").trim();
 }
 
+function normalizeLessonTagText(content: string) {
+  return content
+    .replace(/[â€¹ï¼œ]/g, "<")
+    .replace(/[â€ºï¼ž]/g, ">")
+    .replace(/\r\n/g, "\n");
+}
+
+function extractLessonSection(content: string, tag: string) {
+  const pattern = new RegExp(`<\\s*${tag}\\s*>([\\s\\S]*?)<\\s*\\/\\s*${tag}\\s*>`, "i");
+
+  return content.match(pattern)?.[1]?.trim() || "";
+}
+
+function stripLessonTags(content: string) {
+  return content
+    .replace(/<\s*\/?\s*lesson_feedback\s*>/gi, "")
+    .replace(/<\s*\/?\s*next_question\s*>/gi, "")
+    .trim();
+}
+
+function escapeLessonSection(content: string) {
+  return content.trim();
+}
+
+function looksLikeStudyQuestion(text: string) {
+  const value = text.trim();
+
+  if (!value) {
+    return false;
+  }
+
+  return (
+    /[?؟]$/.test(value) ||
+    /^(can|could|would|will|what|why|how|which|who|where|when|do|does|did|is|are|was|were)\b/i.test(
+      value,
+    )
+  );
+}
+
+function formatStudyAnswerForUi(answer: string) {
+  const normalized = normalizeLessonTagText(answer);
+  const taggedFeedback = extractLessonSection(normalized, "lesson_feedback");
+  const taggedNextQuestion = extractLessonSection(normalized, "next_question");
+
+  if (taggedFeedback || taggedNextQuestion) {
+    return `<lesson_feedback>${escapeLessonSection(taggedFeedback)}</lesson_feedback>\n\n<next_question>${escapeLessonSection(taggedNextQuestion)}</next_question>`;
+  }
+
+  const paragraphs = stripLessonTags(normalized)
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+
+  if (!paragraphs.length) {
+    return answer;
+  }
+
+  const parts = [...paragraphs];
+  let nextQuestion = "";
+  const lastParagraph = parts.at(-1) || "";
+
+  if (looksLikeStudyQuestion(lastParagraph)) {
+    nextQuestion = parts.pop() || "";
+  } else {
+    const questionMatch = lastParagraph.match(/(.+?\?)(?:\s|$)/);
+
+    if (questionMatch) {
+      nextQuestion = questionMatch[1].trim();
+      const remaining = lastParagraph.replace(questionMatch[1], "").trim();
+
+      if (remaining) {
+        parts[parts.length - 1] = remaining;
+      } else {
+        parts.pop();
+      }
+    }
+  }
+
+  const feedback = parts.join("\n\n").trim() || "Let’s build this one step at a time.";
+  const fallbackQuestion =
+    nextQuestion || "Can you answer this in one or two lines before we move ahead?";
+
+  return `<lesson_feedback>${escapeLessonSection(feedback)}</lesson_feedback>\n\n<next_question>${escapeLessonSection(fallbackQuestion)}</next_question>`;
+}
+
 function parseMessages(rawMessages: unknown) {
   if (typeof rawMessages === "string") {
     try {
@@ -453,6 +523,7 @@ async function parseRequest(request: Request) {
       goal: asTrimmedString(formData.get("goal")),
       mode: asTrimmedString(formData.get("mode")) || "study",
       messages: parseMessages(formData.get("messages")),
+      currentAffairsSessionId: asTrimmedString(formData.get("currentAffairsSessionId")),
       studyMaterialFiles: toFiles(formData.getAll("studyMaterial")),
       newspaperFiles: toFiles(formData.getAll("newspaper")),
     };
@@ -465,6 +536,7 @@ async function parseRequest(request: Request) {
     goal: asTrimmedString(payload.goal),
     mode: asTrimmedString(payload.mode) || "study",
     messages: parseMessages(payload.messages),
+    currentAffairsSessionId: "",
     studyMaterialFiles: [] as File[],
     newspaperFiles: [] as File[],
   };
@@ -483,7 +555,15 @@ export async function POST(request: Request) {
     );
   }
 
-  const { subject, goal, mode, messages, studyMaterialFiles, newspaperFiles } =
+  const {
+    subject,
+    goal,
+    mode,
+    messages,
+    currentAffairsSessionId,
+    studyMaterialFiles,
+    newspaperFiles,
+  } =
     await parseRequest(request);
 
   const authUser = await getAuthenticatedAppUser();
@@ -518,7 +598,7 @@ export async function POST(request: Request) {
   let ignouReferenceContext = "";
   let extractedStudyMaterials: ExtractedUpload[] = [];
   let extractedNewspapers: ExtractedUpload[] = [];
-  let adminCurrentAffairsPackContext = "";
+  let currentAffairsSessionResponseId = "";
   let usageProfile = authUser.profile;
 
   if (mode === "study" && wantsNotesInsteadOfStudy(lastUserMessage)) {
@@ -534,7 +614,27 @@ export async function POST(request: Request) {
     });
   }
 
-  if (mode !== "current-affairs") {
+  if (mode === "current-affairs") {
+    const access = await consumeCurrentAffairsTurnIfNeeded(authUser.profile);
+
+    if (access.blocked) {
+      logger.warn("study_buddy.rejected", {
+        reason: "current_affairs_trial_exhausted",
+        userId: authUser.profile.id,
+        mode,
+        subject,
+      });
+      return NextResponse.json(
+        {
+          message: "Current affairs gives 3 free turns. Choose a TamGam plan to continue.",
+          usage: getUsageMeta(access.profile),
+        },
+        { status: 402 },
+      );
+    }
+
+    usageProfile = access.profile;
+  } else {
     const access = await consumeTurnIfNeeded(authUser.profile);
 
     if (access.blocked) {
@@ -547,7 +647,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           message:
-            "Your 3 free turns are over. Choose a TamGam plan to continue with guided study, Mains, Prelims, and notes.",
+            "Your 3 free Study turns are over. Choose a TamGam plan to continue with guided study, Mains, Prelims, and notes.",
           usage: getUsageMeta(access.profile),
         },
         { status: 402 },
@@ -557,9 +657,55 @@ export async function POST(request: Request) {
     usageProfile = access.profile;
   }
 
+  if (usageProfile.plan === "day" && studyMaterialFiles.length > 1) {
+    logger.warn("study_buddy.rejected", {
+      reason: "day_pass_multiple_uploads",
+      userId: usageProfile.id,
+      mode,
+      subject,
+      studyMaterialCount: studyMaterialFiles.length,
+    });
+    return NextResponse.json(
+      {
+        message:
+          "Daily Pass allows only 1 uploaded study document across the workspace. Remove extra files or upgrade for multiple uploads.",
+        usage: getUsageMeta(usageProfile),
+      },
+      { status: 403 },
+    );
+  }
+
+  if (usageProfile.plan === "day" && studyMaterialFiles.length === 1) {
+    const uploadAccess = await reserveDayPassStudyDocument(
+      usageProfile.id,
+      getUploadFileSignature(studyMaterialFiles[0]),
+    );
+
+    usageProfile = uploadAccess.profile;
+
+    if (!uploadAccess.ok) {
+      logger.warn("study_buddy.rejected", {
+        reason: "day_pass_study_document_limit",
+        userId: usageProfile.id,
+        mode,
+        subject,
+      });
+      return NextResponse.json(
+        {
+          message: uploadAccess.message,
+          usage: getUsageMeta(usageProfile),
+        },
+        { status: 403 },
+      );
+    }
+  }
+
   try {
     extractedStudyMaterials = await extractUploadFiles(studyMaterialFiles);
-    extractedNewspapers = await extractUploadFiles(newspaperFiles);
+    extractedNewspapers =
+      mode === "current-affairs"
+        ? await extractUploadFiles(newspaperFiles, { maxCharacters: null })
+        : await extractUploadFiles(newspaperFiles);
     logger.info("study_buddy.request", {
       userId: authUser.profile.id,
       mode,
@@ -587,20 +733,26 @@ export async function POST(request: Request) {
     );
   }
 
+  const studyMaterialContext = buildUploadsContextFromExtracted(extractedStudyMaterials, []);
+
   if (mode === "current-affairs") {
     const adminPack = await getLatestAdminCurrentAffairsPack();
-    adminCurrentAffairsPackContext = buildAdminCurrentAffairsContext(adminPack);
-  }
+    const currentAffairsSession = ensureCurrentAffairsSession({
+      sessionId: currentAffairsSessionId,
+      adminPack,
+      userNewspapers: extractedNewspapers,
+    });
+    const currentAffairsTurn = buildCurrentAffairsTurnContext(currentAffairsSession, {
+      messages,
+      isBroadRequest: isBroadCurrentAffairsTopicRequest(lastUserMessage),
+    });
 
-  currentAffairsSourceContext = buildCurrentAffairsSourceContext(
-    adminCurrentAffairsPackContext,
-    buildUserNewspaperContext(extractedNewspapers),
-  );
-  const studyMaterialContext = buildUploadsContextFromExtracted(extractedStudyMaterials, []);
-  uploadsContext =
-    mode === "current-affairs"
-      ? [studyMaterialContext, currentAffairsSourceContext].filter(Boolean).join("\n\n")
-      : buildUploadsContextFromExtracted(extractedStudyMaterials, extractedNewspapers);
+    currentAffairsSourceContext = currentAffairsTurn.context;
+    currentAffairsSessionResponseId = currentAffairsTurn.session.id;
+    uploadsContext = [studyMaterialContext, currentAffairsSourceContext].filter(Boolean).join("\n\n");
+  } else {
+    uploadsContext = buildUploadsContextFromExtracted(extractedStudyMaterials, extractedNewspapers);
+  }
 
   try {
     ignouReferenceContext = await buildIgnouReferenceContext(subject, lastUserMessage);
@@ -682,10 +834,20 @@ export async function POST(request: Request) {
       );
     }
 
+    const normalizedAnswer = mode === "study" ? formatStudyAnswerForUi(answer) : answer;
+
+    if (mode === "current-affairs" && !getUsageMeta(usageProfile).hasActivePlan) {
+      const trial = await consumeFeatureTrial(usageProfile.id, "current-affairs-turn");
+      usageProfile = trial.profile;
+    }
+
     return NextResponse.json({
-      answer,
+      answer: normalizedAnswer,
       model,
       usage: getUsageMeta(usageProfile),
+      ...(mode === "current-affairs" && currentAffairsSessionResponseId
+        ? { currentAffairsSessionId: currentAffairsSessionResponseId }
+        : {}),
     });
   } catch (error) {
     logger.error("study_buddy.openai_failed", error, {

@@ -2,6 +2,7 @@
 
 import { startTransition, useEffect, useMemo, useState } from "react";
 import {
+  Camera,
   ClipboardCheck,
   FileUp,
   LoaderCircle,
@@ -9,9 +10,12 @@ import {
   ScanText,
   Sparkles,
   Target,
+  Trash2,
 } from "lucide-react";
 import { useGlobalStudyMaterial } from "@/components/global-study-material-provider";
+import { LiveCameraCaptureDialog } from "@/components/live-camera-capture-dialog";
 import { SessionFeedbackCard } from "@/components/session-feedback-card";
+import { mergeSelectedFiles } from "@/lib/file-selection";
 import type {
   MainsEvaluationDraft,
   MainsQuestionDraft,
@@ -54,12 +58,16 @@ export function MainsPracticeStudio({
 }) {
   const [topicFocus, setTopicFocus] = useState("");
   const [chapter, setChapter] = useState("");
+  const [customQuestion, setCustomQuestion] = useState("");
+  const [totalMarks, setTotalMarks] = useState("10");
+  const [wordLimit, setWordLimit] = useState("150");
   const [questionDraft, setQuestionDraft] = useState<MainsQuestionDraft | null>(null);
   const [answerFiles, setAnswerFiles] = useState<File[]>([]);
   const [evaluationDraft, setEvaluationDraft] = useState<MainsEvaluationDraft | null>(null);
   const [questionPending, setQuestionPending] = useState(false);
   const [evaluationPending, setEvaluationPending] = useState(false);
   const [error, setError] = useState("");
+  const [answerCameraOpen, setAnswerCameraOpen] = useState(false);
   const [feedbackSessionKey, setFeedbackSessionKey] = useState(() => `mains-${crypto.randomUUID()}`);
   const { files: globalStudyMaterialFiles } = useGlobalStudyMaterial();
 
@@ -76,8 +84,12 @@ export function MainsPracticeStudio({
     setError("");
   }, [subject]);
 
+  function appendAnswerFiles(nextFiles: File[]) {
+    setAnswerFiles((currentFiles) => mergeSelectedFiles(currentFiles, nextFiles));
+  }
+
   function setUploadedAnswerFiles(fileList: FileList | null) {
-    setAnswerFiles(fileList ? Array.from(fileList) : []);
+    appendAnswerFiles(fileList ? Array.from(fileList) : []);
   }
 
   function appendGlobalStudyMaterial(formData: FormData) {
@@ -87,8 +99,8 @@ export function MainsPracticeStudio({
   }
 
   function generateQuestion() {
-    if (!topicFocus.trim()) {
-      setError("Enter the topic or chapter you want to practice before generating a mains question.");
+    if (!topicFocus.trim() && !customQuestion.trim()) {
+      setError("Enter a topic for generation or paste your own mains question before continuing.");
       return;
     }
 
@@ -103,6 +115,9 @@ export function MainsPracticeStudio({
         formData.set("subject", subject);
         formData.set("topic", topicFocus);
         formData.set("chapter", chapter);
+        formData.set("customQuestion", customQuestion);
+        formData.set("totalMarks", totalMarks);
+        formData.set("wordLimit", wordLimit);
         appendGlobalStudyMaterial(formData);
 
         const response = await fetch("/api/mains-practice", {
@@ -153,6 +168,8 @@ export function MainsPracticeStudio({
         formData.set("topic", topicFocus);
         formData.set("chapter", chapter);
         formData.set("question", questionDraft.question);
+        formData.set("totalMarks", questionDraft.totalMarks || totalMarks);
+        formData.set("wordLimit", questionDraft.wordLimit || wordLimit);
         appendGlobalStudyMaterial(formData);
 
         answerFiles.forEach((file) => {
@@ -197,8 +214,8 @@ export function MainsPracticeStudio({
         </div>
       </div>
 
-      <div className="grid flex-1 gap-5 p-5 md:grid-cols-[21rem_1fr] md:p-6">
-        <aside className="surface-panel rounded-[1.9rem] p-5">
+      <div className="grid flex-1 gap-5 p-5 lg:grid-cols-[minmax(24rem,26rem)_minmax(0,1fr)] md:p-6">
+        <aside className="surface-panel min-w-0 rounded-[1.9rem] p-5">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-navy text-[#fff9ef]">
               <ClipboardCheck size={20} />
@@ -245,19 +262,52 @@ export function MainsPracticeStudio({
               />
             </label>
 
+            <label className="grid gap-2">
+              <span className="text-sm font-semibold text-navy">Or paste your own mains question</span>
+              <textarea
+                value={customQuestion}
+                onChange={(event) => setCustomQuestion(event.target.value)}
+                rows={4}
+                className="rounded-2xl border border-border-subtle bg-white/88 px-4 py-3 text-sm outline-none transition focus:border-gold-strong"
+                placeholder="Paste the exact mains question you want to practice."
+              />
+            </label>
+
+            <div className="grid gap-4 xl:grid-cols-2">
+              <label className="grid min-w-0 gap-2">
+                <span className="text-sm font-semibold text-navy">Total marks</span>
+                <input
+                  value={totalMarks}
+                  onChange={(event) => setTotalMarks(event.target.value)}
+                  className="rounded-2xl border border-border-subtle bg-white/88 px-4 py-3 text-sm outline-none transition focus:border-gold-strong"
+                  placeholder="10 or 15"
+                />
+              </label>
+
+              <label className="grid min-w-0 gap-2">
+                <span className="text-sm font-semibold text-navy">Word limit</span>
+                <input
+                  value={wordLimit}
+                  onChange={(event) => setWordLimit(event.target.value)}
+                  className="rounded-2xl border border-border-subtle bg-white/88 px-4 py-3 text-sm outline-none transition focus:border-gold-strong"
+                  placeholder="150 or 250"
+                />
+              </label>
+            </div>
+
             <button
               type="button"
               onClick={generateQuestion}
-              className="button-primary w-full"
+              className="button-primary w-full px-5 text-sm leading-6"
               disabled={questionPending}
             >
               {questionPending ? <LoaderCircle className="animate-spin" size={18} /> : <Sparkles size={18} />}
-              Generate PYQ-style mains question
+              {customQuestion.trim() ? "Use my mains question" : "Generate mains question"}
             </button>
 
             <div className="rounded-[1.5rem] border border-border-subtle bg-white/78 p-4 text-sm leading-7 text-copy">
-              The question is framed around the selected subject, topic focus, and chapter boundary,
-              while staying close to UPSC mains patterns from the last decade.
+              You can either generate a PYQ-style mains question from the selected topic or paste
+              your own question with the marks and word limit you want to practice.
             </div>
 
             <div className="rounded-[1.5rem] border border-[#f07b17]/18 bg-[#fff4ea] p-4 text-sm leading-7 text-copy">
@@ -280,29 +330,63 @@ export function MainsPracticeStudio({
               )}
             </div>
 
-            <label className="grid gap-2 rounded-[1.5rem] border border-border-subtle bg-white/78 p-4">
-              <span className="flex items-center gap-2 text-sm font-semibold text-navy">
-                <FileUp size={16} />
-                Upload handwritten answer
-              </span>
-              <input
-                type="file"
-                multiple
-                accept=".jpg,.jpeg,.png,.webp,.pdf"
-                onChange={(event) => setUploadedAnswerFiles(event.target.files)}
-                className="text-sm text-copy file:mr-3 file:rounded-full file:border-0 file:bg-navy file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[#fff9ef]"
-              />
-              <span className="text-xs text-copy">
-                Upload answer pages as photos, scans, or a PDF. The agent will transcribe and
-                evaluate them.
-              </span>
-            </label>
+            <div className="grid gap-3 rounded-[1.5rem] border border-border-subtle bg-white/78 p-4">
+              <label className="grid gap-2">
+                <span className="flex items-center gap-2 text-sm font-semibold text-navy">
+                  <FileUp size={16} />
+                  Upload handwritten answer
+                </span>
+                <input
+                  type="file"
+                  multiple
+                  accept=".jpg,.jpeg,.png,.webp,.pdf"
+                  onChange={(event) => {
+                    setUploadedAnswerFiles(event.target.files);
+                    event.target.value = "";
+                  }}
+                  className="text-sm text-copy file:mr-3 file:rounded-full file:border-0 file:bg-navy file:px-4 file:py-2 file:text-sm file:font-semibold file:text-[#fff9ef]"
+                />
+                <span className="text-xs text-copy">
+                  Upload answer pages as photos, scans, or a PDF. The agent will transcribe and
+                  evaluate them.
+                </span>
+              </label>
+
+              <div className="grid gap-2 rounded-[1.35rem] border border-dashed border-[#163f64]/18 bg-[#eef4fb] p-4">
+                <div className="flex items-center gap-2 text-sm font-semibold text-navy">
+                  <Camera size={16} />
+                  Capture answer pages with camera
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setAnswerCameraOpen(true)}
+                  className="inline-flex w-fit items-center gap-2 rounded-full bg-navy px-4 py-2 text-sm font-semibold text-[#fff9ef]"
+                >
+                  <Camera size={16} />
+                  Open camera
+                </button>
+                <span className="text-xs text-copy">
+                  Snap each handwritten page directly from your device camera and add it to this
+                  evaluation attempt.
+                </span>
+              </div>
+            </div>
 
             {answerSummary.length ? (
-              <div className="rounded-[1.5rem] bg-sand/90 px-4 py-3 text-xs text-copy">
-                {answerSummary.map((name) => (
-                  <div key={name}>{name}</div>
-                ))}
+              <div className="grid gap-3">
+                <div className="rounded-[1.5rem] bg-sand/90 px-4 py-3 text-xs text-copy">
+                  {answerSummary.map((name, index) => (
+                    <div key={`${name}-${index}`}>{name}</div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setAnswerFiles([])}
+                  className="inline-flex w-fit items-center gap-2 rounded-full border border-border-subtle bg-white/88 px-4 py-2 text-sm font-semibold text-navy"
+                >
+                  <Trash2 size={16} />
+                  Clear answer pages
+                </button>
               </div>
             ) : null}
 
@@ -318,7 +402,7 @@ export function MainsPracticeStudio({
           </div>
         </aside>
 
-        <div className="grid gap-5">
+        <div className="min-w-0 grid gap-5">
           {error ? (
             <div className="rounded-[1.5rem] border border-rose/25 bg-rose/8 px-4 py-3 text-sm text-rose">
               {error}
@@ -330,9 +414,13 @@ export function MainsPracticeStudio({
               <div className="flex items-center gap-3">
                 <Target className="text-navy" size={20} />
                 <div>
-                  <div className="text-base font-semibold text-navy">Generated mains question</div>
+                  <div className="text-base font-semibold text-navy">
+                    {questionDraft.source === "custom" ? "Your mains question" : "Generated mains question"}
+                  </div>
                   <div className="text-sm text-copy">
-                    Built for {subject} using the topic focus and chapter boundary you selected.
+                    {questionDraft.source === "custom"
+                      ? `Custom question prepared for ${subject}.`
+                      : `Built for ${subject} using the topic focus and chapter boundary you selected.`}
                   </div>
                 </div>
               </div>
@@ -342,6 +430,17 @@ export function MainsPracticeStudio({
                   Question
                 </div>
                 <div className="text-lg font-semibold leading-8">{questionDraft.question}</div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="rounded-full border border-[#163f64]/12 bg-white/70 px-3 py-1 text-xs font-semibold text-[#1a4d75]">
+                    {questionDraft.totalMarks} marks
+                  </span>
+                  <span className="rounded-full border border-[#163f64]/12 bg-white/70 px-3 py-1 text-xs font-semibold text-[#1a4d75]">
+                    {questionDraft.wordLimit} words
+                  </span>
+                  <span className="rounded-full border border-[#163f64]/12 bg-white/70 px-3 py-1 text-xs font-semibold text-[#1a4d75]">
+                    {questionDraft.source === "custom" ? "Your question" : "Generated"}
+                  </span>
+                </div>
               </div>
 
               <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -398,6 +497,20 @@ export function MainsPracticeStudio({
                     Verdict
                   </div>
                   <div className="text-2xl font-semibold text-navy">{evaluationDraft.score}</div>
+                  {(evaluationDraft.totalMarks || evaluationDraft.wordLimit) ? (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {evaluationDraft.totalMarks ? (
+                        <span className="rounded-full border border-gold/25 bg-white/70 px-3 py-1 text-xs font-semibold text-navy">
+                          {evaluationDraft.totalMarks} marks
+                        </span>
+                      ) : null}
+                      {evaluationDraft.wordLimit ? (
+                        <span className="rounded-full border border-gold/25 bg-white/70 px-3 py-1 text-xs font-semibold text-navy">
+                          {evaluationDraft.wordLimit} words
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : null}
                   <p className="mt-3 text-sm leading-7">{evaluationDraft.verdict}</p>
                 </div>
 
@@ -469,6 +582,16 @@ export function MainsPracticeStudio({
           ) : null}
         </div>
       </div>
+
+      <LiveCameraCaptureDialog
+        open={answerCameraOpen}
+        title="Answer page capture"
+        description="Point the camera at each handwritten answer sheet and capture it. Every snapped page is added to this mains evaluation attempt immediately."
+        fileNamePrefix="answer-page"
+        capturedItemLabel="answer page"
+        onCapture={(file) => appendAnswerFiles([file])}
+        onClose={() => setAnswerCameraOpen(false)}
+      />
     </div>
   );
 }
